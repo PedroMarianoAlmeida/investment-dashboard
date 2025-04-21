@@ -1,6 +1,8 @@
-import portfolio from "@/data/portfolio.json"
+import rawData from "@/data/portfolio.json";
+import { Wallet } from "@/types/wallet";
 
+const portfolio = rawData as Wallet[];
 
-export const getWallets = () => {
-    console.log(portfolio)
+export function getWallets(): Omit<Wallet, "assets">[] {
+  return portfolio.map(({ assets, ...rest }) => rest);
 }
