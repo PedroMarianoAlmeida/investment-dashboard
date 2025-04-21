@@ -1,0 +1,122 @@
+[
+  {
+    "walletName": "Main Investment Account",
+    "currentAmount": 42000,
+    "spentAmount": 35000,
+    "profitLoss": 7000,
+    "assets": [
+      {
+        "type": "stock",
+        "symbol": "AAPL",
+        "name": "Apple Inc.",
+        "quantity": 10,
+        "purchasePrice": 145.3,
+        "currentPrice": 170.1
+      },
+      {
+        "type": "crypto",
+        "symbol": "ETH",
+        "name": "Ethereum",
+        "quantity": 1.5,
+        "purchasePrice": 1800,
+        "currentPrice": 3200
+      },
+      {
+        "type": "stock",
+        "symbol": "MSFT",
+        "name": "Microsoft Corp.",
+        "quantity": 8,
+        "purchasePrice": 250,
+        "currentPrice": 280
+      },
+      {
+        "type": "crypto",
+        "symbol": "ADA",
+        "name": "Cardano",
+        "quantity": 100,
+        "purchasePrice": 0.4,
+        "currentPrice": 0.55
+      }
+    ]
+  },
+  {
+    "walletName": "Crypto Wallet",
+    "currentAmount": 15000,
+    "spentAmount": 12000,
+    "profitLoss": 3000,
+    "assets": [
+      {
+        "type": "crypto",
+        "symbol": "BTC",
+        "name": "Bitcoin",
+        "quantity": 0.25,
+        "purchasePrice": 28000,
+        "currentPrice": 35000
+      },
+      {
+        "type": "crypto",
+        "symbol": "SOL",
+        "name": "Solana",
+        "quantity": 30,
+        "purchasePrice": 20,
+        "currentPrice": 90
+      },
+      {
+        "type": "crypto",
+        "symbol": "AVAX",
+        "name": "Avalanche",
+        "quantity": 50,
+        "purchasePrice": 15,
+        "currentPrice": 32
+      },
+      {
+        "type": "crypto",
+        "symbol": "DOT",
+        "name": "Polkadot",
+        "quantity": 40,
+        "purchasePrice": 6.5,
+        "currentPrice": 9.2
+      }
+    ]
+  },
+  {
+    "walletName": "Retirement Portfolio",
+    "currentAmount": 28000,
+    "spentAmount": 25000,
+    "profitLoss": 3000,
+    "assets": [
+      {
+        "type": "stock",
+        "symbol": "GOOGL",
+        "name": "Alphabet Inc.",
+        "quantity": 6,
+        "purchasePrice": 120,
+        "currentPrice": 145
+      },
+      {
+        "type": "stock",
+        "symbol": "TSLA",
+        "name": "Tesla Inc.",
+        "quantity": 4,
+        "purchasePrice": 700,
+        "currentPrice": 730
+      },
+      {
+        "type": "stock",
+        "symbol": "NVDA",
+        "name": "NVIDIA Corp.",
+        "quantity": 3,
+        "purchasePrice": 500,
+        "currentPrice": 620
+      },
+      {
+        "type": "crypto",
+        "symbol": "MATIC",
+        "name": "Polygon",
+        "quantity": 80,
+        "purchasePrice": 0.9,
+        "currentPrice": 1.2
+      }
+    ]
+  }
+]
