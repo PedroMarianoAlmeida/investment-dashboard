@@ -11,7 +11,12 @@ export const AssetSection = ({ walletName }: { walletName?: string }) => {
     );
   const wallets = getAssetsFromWallet(walletName);
 
-  if (!wallets.success) return <p>Invalid Wallet</p>;
+  if (!wallets.success)
+    return (
+      <Section title="Assets" id="assets-heading">
+        <p>Invalid Wallet</p>
+      </Section>
+    );
 
   return (
     <Section title="Assets" id="assets-heading">
