@@ -9,10 +9,12 @@ export const WalletsDetails = ({
   walletDetail: { walletName, currentAmount, spentAmount },
 }: WalletsDetailsProps) => {
   return (
-    <TableRow>
-      <TableCell className="font-medium">{walletName}</TableCell>
-      <TableCell>{currentAmount}</TableCell>
-      <TableCell>{spentAmount}</TableCell>
+    <TableRow className="grid grid-cols-3 place-items-center">
+      <TableCell className="text-base break-normal whitespace-normal text-left w-full">
+        {walletName}
+      </TableCell>
+      <TableCell className="text-right w-full">{currentAmount}</TableCell>
+      <TableCell className="text-right w-full"> {spentAmount}</TableCell>
     </TableRow>
   );
 };
