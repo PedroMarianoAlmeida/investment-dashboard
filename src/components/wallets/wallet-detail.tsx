@@ -12,7 +12,7 @@ export const WalletsDetails = ({
   onClick,
 }: WalletsDetailsProps) => {
   return (
-    <TableRow className="grid grid-cols-3 place-items-center" onClick={onClick}>
+    <TableRow className="grid grid-cols-3 place-items-center cursor-pointer" onClick={onClick}>
       <TableCell className="text-base break-normal whitespace-normal text-left w-full">
         {walletName}
       </TableCell>
