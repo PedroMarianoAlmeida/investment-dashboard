@@ -1,5 +1,6 @@
 import { getAssetsFromWallet } from "@/services/walletService";
 import { Section } from "@/components/layout/section";
+import { AssetsTable } from "@/components/assets/assets-table";
 
 export const AssetSection = ({ walletName }: { walletName?: string }) => {
   if (!walletName)
@@ -14,7 +15,7 @@ export const AssetSection = ({ walletName }: { walletName?: string }) => {
 
   return (
     <Section title="Assets" id="assets-heading">
-      <p>{walletName}</p>
+      <AssetsTable assets={wallets.assets} />
     </Section>
   );
 };
