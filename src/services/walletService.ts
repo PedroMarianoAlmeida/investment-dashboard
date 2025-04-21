@@ -4,7 +4,7 @@ import { Wallet, Asset } from "@/types/wallet";
 const portfolio = rawData as Wallet[];
 
 export function getWallets(): Omit<Wallet, "assets">[] {
-  return portfolio.map(({ assets, ...rest }) => rest);
+  return portfolio.map(({ assets: _assets, ...rest }) => rest);
 }
 
 interface AssetsFromWalletReturnSuccess {

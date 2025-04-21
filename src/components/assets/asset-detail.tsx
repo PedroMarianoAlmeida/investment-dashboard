@@ -8,7 +8,7 @@ interface AssetDetailsProps {
 }
 
 export const AssetDetails = ({
-  asset: { name, type, symbol, quantity, purchasePrice },
+  asset: { type, symbol, quantity, purchasePrice },
 }: AssetDetailsProps) => {
   return (
     <TableRow className="grid grid-cols-4 place-items-center">
