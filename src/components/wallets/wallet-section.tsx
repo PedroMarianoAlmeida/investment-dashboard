@@ -19,14 +19,13 @@ export const WalletSection = () => {
       <h2 className="mb-4 text-2xl font-bold">Wallets</h2>
 
       <Table>
-        <TableCaption>A list of your all wallets</TableCaption>
         <TableHeader>
-          <TableRow className="grid grid-cols-3">
-            <TableHead className="text-muted-foreground">Name</TableHead>
-            <TableHead className="text-muted-foreground text-right">
+          <TableRow className="grid grid-cols-3 py-4">
+            <TableHead className="text-muted-foreground h-auto">Name</TableHead>
+            <TableHead className="text-muted-foreground text-right h-auto">
               Current Amount
             </TableHead>
-            <TableHead className="text-muted-foreground text-right">
+            <TableHead className="text-muted-foreground text-right h-auto">
               Spent Amount
             </TableHead>
           </TableRow>
