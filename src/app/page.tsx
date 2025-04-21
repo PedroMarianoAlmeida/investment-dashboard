@@ -1,12 +1,9 @@
-import { Button } from "@/components/ui/button";
+import { WalletSection } from "@/components/wallets/wallet-section";
 
-import { getWallets } from "@/services/walletService";
 export default function Home() {
-  const wallets = getWallets();
-  console.log({ wallets });
   return (
     <div>
-      <Button>TEST</Button>
+      <WalletSection />
     </div>
   );
 }
