@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
-import { ThemeProvider } from "@/components/layout/theme-provider";
+import { getServerSession } from "next-auth";
 
+import { ThemeProvider } from "@/components/providers/theme-provider";
+import { AuthProvider } from "@/components/providers/session-provider";
 import { Header } from "@/components/layout/header";
 import "./globals.css";
 
@@ -9,23 +11,27 @@ export const metadata: Metadata = {
   description: "by Pedro Almeida",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await getServerSession();
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
-        <Header />
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          {children}
-        </ThemeProvider>
+        <AuthProvider session={session}>
+          <Header />
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+          </ThemeProvider>
+        </AuthProvider>
       </body>
     </html>
   );
