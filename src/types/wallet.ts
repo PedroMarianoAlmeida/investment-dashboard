@@ -28,3 +28,7 @@ export interface WalletAndAssetDataFromDb {
   assets: Map<string, AssetFromDb>;
   wallets: Map<string, WalletFromDb>;
 }
+
+export interface OtherWalletsAssets {
+  otherWalletsAssets: Pick<Asset, "name" | "symbol" | "type">[];
+}
