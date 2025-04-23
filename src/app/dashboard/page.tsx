@@ -1,8 +1,8 @@
 import { getServerSession } from "next-auth/next";
-import { authOptions }    from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/config/authConfig";
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
-  console.log("from dashboard",{ session });
+  console.log("from dashboard", { session });
   return <div>Dashboard</div>;
 }
