@@ -26,10 +26,18 @@ export const AssetSection = ({
       </Section>
     );
 
+  const {
+    assets: existentAssets,
+    otherWalletsAssets,
+    selectedWalletId,
+  } = assetsWallet;
   return (
     <Section title="Assets" id="assets-heading">
-      <AssetsTable assets={assetsWallet.assets} />
-      <AddAsset otherWalletsAssets={assetsWallet.otherWalletsAssets} selectedWallet={selectedWallet} />
+      <AssetsTable assets={existentAssets} />
+      <AddAsset
+        otherWalletsAssets={otherWalletsAssets}
+        selectedWallet={selectedWalletId}
+      />
     </Section>
   );
 };
