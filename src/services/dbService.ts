@@ -1,5 +1,5 @@
 import { getServerSession } from "next-auth/next";
-import { doc, getDoc } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 
 import { database } from "@/config/databaseConfig";
 import { authOptions } from "@/config/authConfig";
@@ -17,7 +17,7 @@ export const getTest = () => {
   });
 };
 
-export const getWalletFromUser = async () => {
+export const getUserData = async () => {
   return asyncWrapper(async () => {
     const session = await getServerSession(authOptions);
     if (!session) throw new Error("No session");
@@ -26,12 +26,16 @@ export const getWalletFromUser = async () => {
       user: { id },
     } = session;
 
-    const docRef = doc(database, `users`, id);
-    const docSnap = await getDoc(docRef);
+    const walletsCollection = collection(database, "users", id, "wallets");
+    const assetsCollection = collection(database, "users", id, "assets");
 
-    if (!docSnap.exists()) throw new Error("Document not founded");
-    const data = docSnap.data();
+    const snapshot = await getDocs(walletsCollection);
 
-    return { data };
+    const wallets = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
+    return { data: wallets };
   });
 };
