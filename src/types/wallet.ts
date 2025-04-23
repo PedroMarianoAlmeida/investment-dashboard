@@ -19,7 +19,7 @@ export interface Wallet {
 
 export interface WalletFromDb {
   name: Asset["name"];
-  assets: Pick<Asset, "symbol" | "quantity" | "type">[];
+  assets: Pick<Asset, "symbol" | "quantity" | "purchasePrice">[];
 }
 
 export interface AssetFromDb
