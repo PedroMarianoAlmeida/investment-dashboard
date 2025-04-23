@@ -1,9 +1,13 @@
 import { WalletTable } from "@/components/wallets/wallet-table";
 import { Section } from "@/components/layout/section";
 import { ClearFilter } from "./clear-filter";
-import { getWallets, GetWalletParams } from "@/services/walletService";
+import { getWallets } from "@/services/walletService";
+import { WalletAndAssetDataFromDb } from "@/types/wallet";
 
-export const WalletSection = ({ assets, wallets }: GetWalletParams) => {
+export const WalletSection = ({
+  assets,
+  wallets,
+}: WalletAndAssetDataFromDb) => {
   const walletsTreated = getWallets({ assets, wallets });
   return (
     <Section title="Wallets" id="wallets-heading">

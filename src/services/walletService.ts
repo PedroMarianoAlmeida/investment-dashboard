@@ -1,13 +1,10 @@
-import { Wallet, Asset, AssetFromDb, WalletFromDb } from "@/types/wallet";
+import { Wallet, Asset, WalletAndAssetDataFromDb } from "@/types/wallet";
 
-export interface GetWalletParams {
-  assets: Map<string, AssetFromDb>;
-  wallets: Map<string, WalletFromDb>;
-}
+
 export function getWallets({
   assets: assetMap,
   wallets: walletMap,
-}: GetWalletParams): Omit<Wallet, "assets">[] {
+}: WalletAndAssetDataFromDb): Omit<Wallet, "assets">[] {
   return Array.from(walletMap.values()).map((walletDb) => {
     // 1) Merge per-wallet asset entries (symbol, quantity, purchasePrice)
     //    with the global assetMap (name, type, currentPrice).
@@ -57,7 +54,7 @@ interface AssetsFromWalletReturnFail {
   success: false;
 }
 
-interface GetAssetsFromWalletParams extends GetWalletParams {
+interface GetAssetsFromWalletParams extends WalletAndAssetDataFromDb {
   selectedWallet: string;
 }
 

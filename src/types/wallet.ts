@@ -23,3 +23,8 @@ export interface WalletFromDb {
 }
 
 export type AssetFromDb = Pick<Asset, "currentPrice" | "name" | "type">;
+
+export interface WalletAndAssetDataFromDb {
+  assets: Map<string, AssetFromDb>;
+  wallets: Map<string, WalletFromDb>;
+}

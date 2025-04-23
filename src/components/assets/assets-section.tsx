@@ -1,8 +1,9 @@
-import { getAssetsFromWallet, GetWalletParams } from "@/services/walletService";
+import { getAssetsFromWallet } from "@/services/walletService";
 import { Section } from "@/components/layout/section";
 import { AssetsTable } from "@/components/assets/assets-table";
+import { WalletAndAssetDataFromDb } from "@/types/wallet";
 
-interface AssetSectionProps extends GetWalletParams {
+interface AssetSectionProps extends WalletAndAssetDataFromDb {
   selectedWallet?: string;
 }
 export const AssetSection = ({
