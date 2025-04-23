@@ -22,5 +22,4 @@ export interface WalletFromDb {
   assets: Pick<Asset, "symbol" | "quantity" | "purchasePrice">[];
 }
 
-export interface AssetFromDb
-  extends Pick<Asset, "currentPrice" | "name" | "type"> {}
+export type AssetFromDb = Pick<Asset, "currentPrice" | "name" | "type">;

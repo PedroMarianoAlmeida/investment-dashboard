@@ -3,9 +3,7 @@ import { Section } from "@/components/layout/section";
 import { ClearFilter } from "./clear-filter";
 import { getWallets, GetWalletParams } from "@/services/walletService";
 
-interface WalletSectionProps extends GetWalletParams {}
-
-export const WalletSection = ({ assets, wallets }: WalletSectionProps) => {
+export const WalletSection = ({ assets, wallets }: GetWalletParams) => {
   const walletsTreated = getWallets({ assets, wallets });
   return (
     <Section title="Wallets" id="wallets-heading">

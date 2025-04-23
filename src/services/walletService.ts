@@ -1,7 +1,4 @@
-import rawData from "@/data/portfolio.json";
 import { Wallet, Asset, AssetFromDb, WalletFromDb } from "@/types/wallet";
-
-const portfolio = rawData as Wallet[];
 
 export interface GetWalletParams {
   assets: Map<string, AssetFromDb>;
