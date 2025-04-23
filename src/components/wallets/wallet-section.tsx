@@ -1,17 +1,16 @@
 import { WalletTable } from "@/components/wallets/wallet-table";
 import { Section } from "@/components/layout/section";
 import { ClearFilter } from "./clear-filter";
-import { Wallet } from "@/types/wallet";
+import { getWallets, GetWalletParams } from "@/services/walletService";
 
-interface WalletSectionProps {
-  wallets: Omit<Wallet, "assets">[];
-}
+interface WalletSectionProps extends GetWalletParams {}
 
-export const WalletSection = ({ wallets }: WalletSectionProps) => {
+export const WalletSection = ({ assets, wallets }: WalletSectionProps) => {
+  const walletsTreated = getWallets({ assets, wallets });
   return (
     <Section title="Wallets" id="wallets-heading">
       <div className="flex flex-col gap-2">
-        <WalletTable wallets={wallets} />
+        <WalletTable wallets={walletsTreated} />
         <ClearFilter />
       </div>
     </Section>

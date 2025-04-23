@@ -1,5 +1,4 @@
 import { getUserData } from "@/services/dbService";
-import { getWallets } from "@/services/walletService";
 
 import { WalletSection } from "@/components/wallets/wallet-section";
 import { AssetSection } from "@/components/assets/assets-section";
@@ -14,13 +13,11 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
     data: { assets, wallets },
   } = data.result;
 
-  const walletsTreated = getWallets({ assets, wallets });
-
   const { selected } = await searchParams;
 
   return (
     <div className="grid gap-8 p-6 md:grid-cols-2 md:p-8">
-      <WalletSection wallets={walletsTreated} />
+      <WalletSection assets={assets} wallets={wallets} />
       <AssetSection
         selectedWallet={selected}
         assets={assets}
