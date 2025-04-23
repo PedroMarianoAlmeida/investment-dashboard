@@ -1,5 +1,9 @@
-import { Wallet, Asset, WalletAndAssetDataFromDb } from "@/types/wallet";
-
+import {
+  Wallet,
+  Asset,
+  WalletAndAssetDataFromDb,
+  AssetType,
+} from "@/types/wallet";
 
 export function getWallets({
   assets: assetMap,
@@ -48,6 +52,7 @@ export function getWallets({
 interface AssetsFromWalletReturnSuccess {
   success: true;
   assets: Asset[];
+  otherWalletsAssets: { type: AssetType; symbol: string; name: string }[];
 }
 
 interface AssetsFromWalletReturnFail {
@@ -73,7 +78,7 @@ export function getAssetsFromWallet({
     return { success: false };
   }
 
-  // 2) Rehydrate each asset
+  // 2) Rehydrate each asset for the selected wallet
   const fullAssets: Asset[] = walletDb.assets.map(
     ({ symbol, quantity, purchasePrice }) => {
       const db = assetMap.get(symbol);
@@ -91,8 +96,19 @@ export function getAssetsFromWallet({
     }
   );
 
+  // 3) Determine which assets exist in assetMap but are not held in the selected wallet
+  const selectedSymbols = new Set(fullAssets.map((a) => a.symbol));
+  const otherWalletsAssets = Array.from(assetMap.entries())
+    .filter(([symbol]) => !selectedSymbols.has(symbol))
+    .map(([symbol, db]) => ({
+      type: db.type,
+      symbol,
+      name: db.name,
+    }));
+
   return {
     success: true,
     assets: fullAssets,
+    otherWalletsAssets,
   };
 }

@@ -2,7 +2,7 @@ import { getAssetsFromWallet } from "@/services/walletService";
 import { Section } from "@/components/layout/section";
 import { AssetsTable } from "@/components/assets/assets-table";
 import { WalletAndAssetDataFromDb } from "@/types/wallet";
-
+// import { AddAsset } from "@/components/assets/add-asset";
 interface AssetSectionProps extends WalletAndAssetDataFromDb {
   selectedWallet?: string;
 }
@@ -25,10 +25,11 @@ export const AssetSection = ({
         <p>Invalid Wallet</p>
       </Section>
     );
-
+  console.log({ assetsWallet });
   return (
     <Section title="Assets" id="assets-heading">
       <AssetsTable assets={assetsWallet.assets} />
+      {/* <AddAsset otherWalletsAssets={assetsWallet.otherWalletsAssets} /> */}
     </Section>
   );
 };
