@@ -22,15 +22,22 @@ import {
 import { Button } from "@/components/ui/button";
 import { OtherWalletsAssets } from "@/types/wallet";
 
+import { addExistentAssetInNewWallet } from "@/services/dbService";
+
 const formSchema = z.object({
   purchasePrice: z.number().min(0),
   quantity: z.number().min(0),
   symbol: z.string().nonempty("You must pick an asset"),
 });
 
+interface ExistentAssetForm extends OtherWalletsAssets {
+  selectedWallet: string;
+}
+
 export const ExistentAssetForm = ({
   otherWalletsAssets,
-}: OtherWalletsAssets) => {
+  selectedWallet,
+}: ExistentAssetForm) => {
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -41,10 +48,14 @@ export const ExistentAssetForm = ({
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    // In the future I will call this function here
     console.log(values);
+    const { purchasePrice, quantity, symbol } = values;
+    await addExistentAssetInNewWallet({
+      asset: { purchasePrice, quantity, symbol },
+      wallet: selectedWallet,
+    });
   }
 
   return (
@@ -62,7 +73,7 @@ export const ExistentAssetForm = ({
                   value={field.value}
                   defaultValue=""
                 >
-                  <SelectTrigger className="w-[200px]">
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select asset…" />
                   </SelectTrigger>
                   <SelectContent>
@@ -84,10 +95,12 @@ export const ExistentAssetForm = ({
           name="purchasePrice"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Purchase Price</FormLabel>
+              <FormLabel>Purchase Price ($)</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="20"
+                  type="number"
+                  inputMode="decimal"
+                  placeholder="20.00"
                   {...field}
                   onChange={(e) => field.onChange(Number(e.target.value))}
                 />
@@ -107,6 +120,7 @@ export const ExistentAssetForm = ({
               <FormControl>
                 <Input
                   placeholder="5"
+                  type="number"
                   {...field}
                   onChange={(e) => field.onChange(Number(e.target.value))}
                 />

@@ -16,9 +16,10 @@ import {
 
 import { ExistentAssetForm } from "@/components/assets/existent-asset-form";
 
-export const AddAsset = ({ otherWalletsAssets }: OtherWalletsAssets) => {
-  console.log({ otherWalletsAssets });
-
+interface AddAssetProps extends OtherWalletsAssets{
+    selectedWallet: string
+}
+export const AddAsset = ({ otherWalletsAssets, selectedWallet }: AddAssetProps) => {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
@@ -30,7 +31,7 @@ export const AddAsset = ({ otherWalletsAssets }: OtherWalletsAssets) => {
           <AlertDialogDescription>
             Add a new asset into Wallet
           </AlertDialogDescription>
-          <ExistentAssetForm otherWalletsAssets={otherWalletsAssets} />
+          <ExistentAssetForm otherWalletsAssets={otherWalletsAssets} selectedWallet={selectedWallet}/>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>

@@ -29,7 +29,7 @@ export const AssetSection = ({
   return (
     <Section title="Assets" id="assets-heading">
       <AssetsTable assets={assetsWallet.assets} />
-      <AddAsset otherWalletsAssets={assetsWallet.otherWalletsAssets} />
+      <AddAsset otherWalletsAssets={assetsWallet.otherWalletsAssets} selectedWallet={selectedWallet} />
     </Section>
   );
 };
