@@ -1,18 +1,10 @@
-"use client";
-import { signIn, signOut } from "next-auth/react";
-import { useSession } from "next-auth/react";
-
-import { Button } from "@/components/ui/button";
+import { Menu } from "@/components/auth/menu";
 
 export const Header = () => {
-  const { data } = useSession();
-  console.log({ data });
-
   return (
-    <header className="p-4 bg-secondary-foreground">
+    <header className="p-4 bg-secondary-foreground flex justify-between items-center">
       <h1 className="text-primary-foreground text-2xl">Investment Portfolio</h1>
-      <Button onClick={() => signIn()}>Sign In</Button>
-      <Button onClick={() => signOut()}>Sig Out</Button>
+      <Menu />
     </header>
   );
 };
