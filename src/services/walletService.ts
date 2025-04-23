@@ -3,7 +3,7 @@ import { Wallet, Asset, AssetFromDb, WalletFromDb } from "@/types/wallet";
 
 const portfolio = rawData as Wallet[];
 
-interface GetWalletParams {
+export interface GetWalletParams {
   assets: Map<string, AssetFromDb>;
   wallets: Map<string, WalletFromDb>;
 }
@@ -59,12 +59,46 @@ interface AssetsFromWalletReturnSuccess {
 interface AssetsFromWalletReturnFail {
   success: false;
 }
-export function getAssetsFromWallet(
-  wallet: string
-): AssetsFromWalletReturnSuccess | AssetsFromWalletReturnFail {
-  const walletSelected = portfolio.find(
-    ({ walletName }) => wallet === walletName
+
+interface GetAssetsFromWalletParams extends GetWalletParams {
+  selectedWallet: string;
+}
+
+export function getAssetsFromWallet({
+  assets: assetMap,
+  wallets: walletMap,
+  selectedWallet,
+}: GetAssetsFromWalletParams):
+  | AssetsFromWalletReturnSuccess
+  | AssetsFromWalletReturnFail {
+  // 1) Find the wallet entry whose .name matches selectedWallet
+  const walletDb = Array.from(walletMap.values()).find(
+    (w) => w.name === selectedWallet
   );
-  if (!walletSelected) return { success: false };
-  return { assets: walletSelected.assets, success: true };
+  if (!walletDb) {
+    return { success: false };
+  }
+
+  // 2) Rehydrate each asset
+  const fullAssets: Asset[] = walletDb.assets.map(
+    ({ symbol, quantity, purchasePrice }) => {
+      const db = assetMap.get(symbol);
+      if (!db) {
+        throw new Error(`Missing asset data for symbol "${symbol}"`);
+      }
+      return {
+        symbol,
+        type: db.type,
+        name: db.name,
+        quantity,
+        purchasePrice,
+        currentPrice: db.currentPrice,
+      };
+    }
+  );
+
+  return {
+    success: true,
+    assets: fullAssets,
+  };
 }

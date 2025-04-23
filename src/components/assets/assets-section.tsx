@@ -1,17 +1,24 @@
-import { getAssetsFromWallet } from "@/services/walletService";
+import { getAssetsFromWallet, GetWalletParams } from "@/services/walletService";
 import { Section } from "@/components/layout/section";
 import { AssetsTable } from "@/components/assets/assets-table";
 
-export const AssetSection = ({ walletName }: { walletName?: string }) => {
-  if (!walletName)
+interface AssetSectionProps extends GetWalletParams {
+  selectedWallet?: string;
+}
+export const AssetSection = ({
+  assets,
+  selectedWallet,
+  wallets,
+}: AssetSectionProps) => {
+  if (!selectedWallet)
     return (
       <Section title="Assets" id="assets-heading">
         <p>Select a Wallet</p>
       </Section>
     );
-  const wallets = getAssetsFromWallet(walletName);
+  const assetsWallet = getAssetsFromWallet({ assets, selectedWallet, wallets });
 
-  if (!wallets.success)
+  if (!assetsWallet.success)
     return (
       <Section title="Assets" id="assets-heading">
         <p>Invalid Wallet</p>
@@ -20,7 +27,7 @@ export const AssetSection = ({ walletName }: { walletName?: string }) => {
 
   return (
     <Section title="Assets" id="assets-heading">
-      <AssetsTable assets={wallets.assets} />
+      <AssetsTable assets={assetsWallet.assets} />
     </Section>
   );
 };
