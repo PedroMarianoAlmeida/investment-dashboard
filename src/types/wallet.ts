@@ -1,5 +1,4 @@
-
-export type AssetType = 'stock' | 'crypto';
+export type AssetType = "stock" | "crypto";
 
 export interface Asset {
   type: AssetType;
@@ -17,3 +16,10 @@ export interface Wallet {
   profitLoss: number;
   assets: Asset[];
 }
+
+export interface WalletFromDb {
+  name: Asset["name"];
+  assets: Pick<Asset, "symbol" | "quantity" | "purchasePrice">[];
+}
+
+export type AssetFromDb = Pick<Asset, "currentPrice" | "name" | "type">;
