@@ -19,12 +19,8 @@ export const WalletSection = ({
         <NewWallet />
         {walletsTreated.length !== 0 && (
           <div className="w-full flex flex-col md:flex-row justify-center items-center gap-4 mt-4">
-            <div className="w-full md:w-1/2">
-              <WalletBarChart wallets={walletsTreated} />
-            </div>
-            <div className="w-full md:w-1/2">
-              <WalletPieChart wallets={walletsTreated} />
-            </div>
+            <WalletBarChart wallets={walletsTreated} />
+            <WalletPieChart wallets={walletsTreated} />
           </div>
         )}
       </div>
