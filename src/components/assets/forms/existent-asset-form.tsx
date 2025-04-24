@@ -31,11 +31,13 @@ const formSchema = z.object({
 
 interface ExistentAssetFormProps extends OtherWalletsAssets {
   selectedWallet: string;
+  onSuccess(): void;
 }
 
 export const ExistentAssetForm = ({
   otherWalletsAssets,
   selectedWallet,
+  onSuccess,
 }: ExistentAssetFormProps) => {
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
@@ -54,6 +56,8 @@ export const ExistentAssetForm = ({
       asset: { purchasePrice, quantity, symbol },
       wallet: selectedWallet,
     });
+    console.log("RUN");
+    onSuccess();
   }
 
   return (
@@ -126,7 +130,9 @@ export const ExistentAssetForm = ({
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full">Submit</Button>
+        <Button type="submit" className="w-full">
+          Submit
+        </Button>
       </form>
     </Form>
   );

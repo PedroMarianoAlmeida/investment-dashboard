@@ -1,7 +1,7 @@
 "use client";
-import { Button } from "@/components/ui/button";
-import { OtherWalletsAssets } from "@/types/wallet";
+import { useState } from "react";
 
+import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -12,9 +12,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
+import { OtherWalletsAssets } from "@/types/wallet";
 import { ExistentAssetForm } from "@/components/assets/forms/existent-asset-form";
 import { NewAssetIntoWalletForm } from "@/components/assets/forms/new-asset-into-wallet-form";
 
@@ -25,8 +25,13 @@ export const AddAsset = ({
   otherWalletsAssets,
   selectedWallet,
 }: AddAssetProps) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const closeModal = () => {
+    setIsOpen(false);
+  };
+
   return (
-    <AlertDialog>
+    <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
       <AlertDialogTrigger asChild>
         <Button className="w-40">New Asset</Button>
       </AlertDialogTrigger>
@@ -40,6 +45,7 @@ export const AddAsset = ({
             <NewAssetIntoWalletForm
               otherWalletsAssets={otherWalletsAssets}
               selectedWallet={selectedWallet}
+              onSuccess={closeModal}
             />
           ) : (
             <Tabs defaultValue="existent-asset">
@@ -51,12 +57,14 @@ export const AddAsset = ({
                 <ExistentAssetForm
                   otherWalletsAssets={otherWalletsAssets}
                   selectedWallet={selectedWallet}
+                  onSuccess={closeModal}
                 />
               </TabsContent>
               <TabsContent value="new-asset">
                 <NewAssetIntoWalletForm
                   otherWalletsAssets={otherWalletsAssets}
                   selectedWallet={selectedWallet}
+                  onSuccess={closeModal}
                 />
               </TabsContent>
             </Tabs>

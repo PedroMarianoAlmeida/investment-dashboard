@@ -36,10 +36,12 @@ const formSchema = z.object({
 interface NewAssetIntoWalletFormProps extends OtherWalletsAssets {
   // TODO: Get all assets code to validate that it is really a new one
   selectedWallet: string;
+  onSuccess(): void;
 }
 
 export const NewAssetIntoWalletForm = ({
   selectedWallet,
+  onSuccess,
 }: NewAssetIntoWalletFormProps) => {
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
@@ -56,7 +58,6 @@ export const NewAssetIntoWalletForm = ({
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     // TODO: Add query mutation
-    console.log(values);
     const { purchasePrice, quantity, symbol, name, type, currentPrice } =
       values;
     await addNewAssetInNewWallet({
@@ -64,11 +65,15 @@ export const NewAssetIntoWalletForm = ({
       assetDbData: { currentPrice, name, type },
       assetOnWallet: { purchasePrice, quantity, symbol },
     });
+    onSuccess()
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-2 gap-8">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="grid grid-cols-2 gap-8"
+      >
         <FormField
           control={form.control}
           name="symbol"
@@ -189,7 +194,9 @@ export const NewAssetIntoWalletForm = ({
             </FormItem>
           )}
         />
-        <Button type="submit" className="col-span-2">Submit</Button>
+        <Button type="submit" className="col-span-2">
+          Submit
+        </Button>
       </form>
     </Form>
   );
