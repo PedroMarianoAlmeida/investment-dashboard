@@ -23,7 +23,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { OtherWalletsAssets } from "@/types/wallet";
 
-import { addExistentAssetInNewWallet } from "@/services/dbService";
+import { addNewAssetInNewWallet } from "@/services/dbService";
 
 const formSchema = z.object({
   purchasePrice: z.number().min(0),
@@ -31,9 +31,11 @@ const formSchema = z.object({
   symbol: z.string().nonempty("You must pick an asset"),
   name: z.string().nonempty("You must pick an asset"),
   type: z.union([z.literal("stock"), z.literal("crypto")]),
+  currentPrice: z.number().min(0),
 });
 
 interface NewAssetIntoWalletFormProps extends OtherWalletsAssets {
+  // TODO: Get all assets code to validate that it is really a new one
   selectedWallet: string;
 }
 
@@ -49,13 +51,20 @@ export const NewAssetIntoWalletForm = ({
       quantity: 0,
       name: "",
       type: "stock",
+      currentPrice: 0,
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    // In the future I will call this function here
+    // TODO: Add query mutation
     console.log(values);
-    const { purchasePrice, quantity, symbol } = values;
+    const { purchasePrice, quantity, symbol, name, type, currentPrice } =
+      values;
+    await addNewAssetInNewWallet({
+      wallet: selectedWallet,
+      assetDbData: { currentPrice, name, type },
+      assetOnWallet: { purchasePrice, quantity, symbol },
+    });
   }
 
   return (
@@ -124,6 +133,28 @@ export const NewAssetIntoWalletForm = ({
             </FormItem>
           )}
         />
+
+        <FormField
+          control={form.control}
+          name="currentPrice"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Current Price ($)</FormLabel>
+              <FormControl>
+                <Input
+                  type="number"
+                  inputMode="decimal"
+                  placeholder="20.00"
+                  {...field}
+                  onChange={(e) => field.onChange(Number(e.target.value))}
+                />
+              </FormControl>
+              <FormDescription>The value that you buy it</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         <FormField
           control={form.control}
           name="purchasePrice"

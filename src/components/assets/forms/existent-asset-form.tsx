@@ -49,8 +49,7 @@ export const ExistentAssetForm = ({
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    // In the future I will call this function here
-    console.log(values);
+    // TODO: Add query mutation
     const { purchasePrice, quantity, symbol } = values;
     await addExistentAssetInNewWallet({
       asset: { purchasePrice, quantity, symbol },
