@@ -1,6 +1,5 @@
 import { getUserData } from "@/services/dbService";
 import { AssetSection } from "@/components/assets/assets-section";
-import { Button } from "@/components/ui/button";
 
 interface WalletDetailsPageProps {
   params: { walletId: string };
