@@ -67,7 +67,6 @@ export const EditAssetIntoWalletForm = ({
     mutation.mutate({
       wallet: selectedWallet,
       symbol: selectedAsset,
-      // only send wallet‐side changes if they differ
       ...(values.purchasePrice !== originalData.purchasePrice ||
       values.quantity !== originalData.quantity
         ? {
@@ -77,7 +76,6 @@ export const EditAssetIntoWalletForm = ({
             },
           }
         : {}),
-      // only send DB‐side changes if they differ
       ...(values.name !== originalData.name ||
       values.type !== originalData.type ||
       values.currentPrice !== originalData.currentPrice
