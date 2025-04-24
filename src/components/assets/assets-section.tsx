@@ -7,6 +7,7 @@ import { AssetsTable } from "@/components/assets/assets-table";
 import { WalletAndAssetDataFromDb } from "@/types/wallet";
 import { AddAsset } from "@/components/assets/actions/add-asset";
 import { Button } from "@/components/ui/button";
+import { AssetBarChart } from "@/components/assets/charts/asset-bar-chart";
 interface AssetSectionProps extends WalletAndAssetDataFromDb {
   selectedWallet?: string;
 }
@@ -43,7 +44,7 @@ export const AssetSection = ({
           selectedWallet={selectedWalletId}
         />
         <div className="flex gap-2">
-          <Link href="/dashboard" >
+          <Link href="/dashboard">
             <Button className="cursor-pointer">
               <House /> Dashboard
             </Button>
@@ -53,6 +54,12 @@ export const AssetSection = ({
             selectedWallet={selectedWalletId}
           />
         </div>
+
+        {existentAssets.length !== 0 && (
+          <div className="w-full flex justify-center">
+            <AssetBarChart assets={existentAssets} />
+          </div>
+        )}
       </div>
     </Section>
   );
