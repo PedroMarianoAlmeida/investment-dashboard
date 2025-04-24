@@ -31,7 +31,7 @@ export const EditAsset = ({ selectedWallet, originalData,selectedAsset }: EditAs
   return (
     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
       <AlertDialogTrigger asChild>
-        <Button>
+        <Button className="cursor-pointer">
           <Pen />
         </Button>
       </AlertDialogTrigger>

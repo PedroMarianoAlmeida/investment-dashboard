@@ -1,10 +1,16 @@
-import { Wallet, Asset, WalletAndAssetDataFromDb, AssetType } from "@/types/wallet";
+import {
+  Asset,
+  WalletAndAssetDataFromDb,
+  AssetType,
+  WalletWithIdWithoutAssets,
+  OtherWalletsAssets,
+} from "@/types/wallet";
 
 export function getWallets({
   assets: assetMap,
   wallets: walletMap,
-}: WalletAndAssetDataFromDb): Omit<Wallet, "assets">[] {
-  return Array.from(walletMap.values()).map((walletDb) => {
+}: WalletAndAssetDataFromDb): WalletWithIdWithoutAssets[] {
+  return Array.from(walletMap.entries()).map(([walletId, walletDb]) => {
     const fullAssets: Asset[] = walletDb.assets.map(
       ({ symbol, quantity, purchasePrice }) => {
         const db = assetMap.get(symbol);
@@ -22,11 +28,18 @@ export function getWallets({
       }
     );
 
-    const currentAmount = fullAssets.reduce((sum, a) => sum + a.currentPrice * a.quantity, 0);
-    const spentAmount = fullAssets.reduce((sum, a) => sum + a.purchasePrice * a.quantity, 0);
+    const currentAmount = fullAssets.reduce(
+      (sum, a) => sum + a.currentPrice * a.quantity,
+      0
+    );
+    const spentAmount = fullAssets.reduce(
+      (sum, a) => sum + a.purchasePrice * a.quantity,
+      0
+    );
     const profitLoss = currentAmount - spentAmount;
 
     return {
+      id: walletId,
       walletName: walletDb.name,
       currentAmount,
       spentAmount,
@@ -53,44 +66,48 @@ interface GetAssetsFromWalletParams extends WalletAndAssetDataFromDb {
 export function getAssetsFromWallet({
   assets: assetMap,
   wallets: walletMap,
-  selectedWallet,
-}: GetAssetsFromWalletParams): AssetsFromWalletReturnSuccess | AssetsFromWalletReturnFail {
-  // 1) Find the wallet entry ID and data whose .name matches selectedWallet
-  const entry = Array.from(walletMap.entries()).find(([, w]) => w.name === selectedWallet);
-  if (!entry) {
+  selectedWallet, // now the wallet’s ID
+}: GetAssetsFromWalletParams):
+  | AssetsFromWalletReturnSuccess
+  | AssetsFromWalletReturnFail {
+  // 1) Grab the WalletFromDb by its ID
+  const walletDb = walletMap.get(selectedWallet);
+  if (!walletDb) {
     return { success: false };
   }
-  const [selectedWalletId, walletDb] = entry;
 
   // 2) Rehydrate each asset for the selected wallet
-  const fullAssets: Asset[] = walletDb.assets.map(({ symbol, quantity, purchasePrice }) => {
-    const db = assetMap.get(symbol);
-    if (!db) {
-      throw new Error(`Missing asset data for symbol "${symbol}"`);
+  const fullAssets: Asset[] = walletDb.assets.map(
+    ({ symbol, quantity, purchasePrice }) => {
+      const db = assetMap.get(symbol);
+      if (!db) {
+        throw new Error(`Missing asset data for symbol "${symbol}"`);
+      }
+      return {
+        symbol,
+        type: db.type,
+        name: db.name,
+        quantity,
+        purchasePrice,
+        currentPrice: db.currentPrice,
+      };
     }
-    return {
-      symbol,
-      type: db.type,
-      name: db.name,
-      quantity,
-      purchasePrice,
-      currentPrice: db.currentPrice,
-    };
-  });
+  );
 
-  // 3) Determine which assets exist in assetMap but are not held in the selected wallet
-  const selectedSymbols = new Set(fullAssets.map((a) => a.symbol));
-  const otherWalletsAssets = Array.from(assetMap.entries())
-    .filter(([symbol]) => !selectedSymbols.has(symbol))
-    .map(([symbol, db]) => ({
-      type: db.type,
-      symbol,
-      name: db.name,
-    }));
+  // 3) Assets in assetMap but not in the selected wallet
+  const held = new Set(fullAssets.map((a) => a.symbol));
+  const otherWalletsAssets: OtherWalletsAssets["otherWalletsAssets"] =
+    Array.from(assetMap.entries())
+      .filter(([symbol]) => !held.has(symbol))
+      .map(([symbol, db]) => ({
+        type: db.type,
+        symbol,
+        name: db.name,
+      }));
 
   return {
     success: true,
-    selectedWalletId,
+    selectedWalletId: selectedWallet,
     assets: fullAssets,
     otherWalletsAssets,
   };

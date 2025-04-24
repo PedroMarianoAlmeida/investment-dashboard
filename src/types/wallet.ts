@@ -48,3 +48,7 @@ export const editAssetIntoWalletFormSchema = z.object({
 });
 
 export type EditAssetForm = z.infer<typeof editAssetIntoWalletFormSchema>;
+
+export interface WalletWithIdWithoutAssets extends Omit<Wallet, "assets"> {
+  id: string;
+}
