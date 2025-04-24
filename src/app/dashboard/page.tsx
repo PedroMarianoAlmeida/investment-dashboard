@@ -10,10 +10,10 @@ export default async function DashboardPage() {
   } = data.result;
 
   return (
-    <div className="grid gap-8 p-6 md:grid-cols-2 md:p-8">
+    <main className="p-4">
       <WalletSection assets={assets} wallets={wallets} />
 
       {/* Add all assets table, and maybe a nice chart */}
-    </div>
+    </main>
   );
 }

@@ -51,7 +51,7 @@ export const DeleteAsset = ({
   return (
     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
       <AlertDialogTrigger asChild>
-        <Button variant="destructive">
+        <Button variant="destructive" className="cursor-pointer">
           <Trash />
         </Button>
       </AlertDialogTrigger>

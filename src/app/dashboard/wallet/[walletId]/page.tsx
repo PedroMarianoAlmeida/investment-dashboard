@@ -1,5 +1,6 @@
 import { getUserData } from "@/services/dbService";
 import { AssetSection } from "@/components/assets/assets-section";
+import { Button } from "@/components/ui/button";
 
 interface WalletDetailsPageProps {
   params: { walletId: string };
@@ -15,12 +16,12 @@ export default async function WalletDetailsPage({
     data: { assets, wallets },
   } = data.result;
   return (
-    <div>
+    <main className="p-4">
       <AssetSection
         selectedWallet={walletId}
         assets={assets}
         wallets={wallets}
       />
-    </div>
+    </main>
   );
 }

@@ -26,7 +26,7 @@ export const WalletsDetails = ({
       </TableCell>
       <TableCell className="w-full text-center">
         <Link href={`/dashboard/wallet/${id}`}>
-          <Button>
+          <Button className="cursor-pointer">
             <Eye />
           </Button>
         </Link>
