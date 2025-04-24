@@ -4,7 +4,6 @@ import { OtherWalletsAssets } from "@/types/wallet";
 
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
