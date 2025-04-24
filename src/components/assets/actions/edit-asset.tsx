@@ -13,11 +13,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-import { OtherWalletsAssets } from "@/types/wallet";
-import { ExistentAssetForm } from "@/components/assets/forms/existent-asset-form";
-import { NewAssetIntoWalletForm } from "@/components/assets/forms/new-asset-into-wallet-form";
+import { EditAssetIntoWalletForm } from "@/components/assets/forms/edit-asset-into-wallet-form";
 
 // interface AddAssetProps extends OtherWalletsAssets {
 //   selectedWallet: string;
@@ -41,6 +38,7 @@ export const EditAsset = () => {
           <AlertDialogDescription>
             Edit asset into Wallet
           </AlertDialogDescription>
+          <EditAssetIntoWalletForm />
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>

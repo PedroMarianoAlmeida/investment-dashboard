@@ -23,12 +23,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { OtherWalletsAssets } from "@/types/wallet";
 
-import { addExistentAssetInNewWallet } from "@/services/dbService";
+import { editAssetInWallet } from "@/services/dbService";
 
 const formSchema = z.object({
+  name: z.string().nonempty("Name is required"),
+  type: z.union([z.literal("stock"), z.literal("crypto")]),
+  currentPrice: z.number().min(0),
   purchasePrice: z.number().min(0),
   quantity: z.number().min(0),
-  symbol: z.string().nonempty("You must pick an asset"),
 });
 
 interface ExistentAssetFormProps extends OtherWalletsAssets {
@@ -36,15 +38,16 @@ interface ExistentAssetFormProps extends OtherWalletsAssets {
   onSuccess(): void;
 }
 
-export const ExistentAssetForm = ({
-  otherWalletsAssets,
+export const EditAssetIntoWalletForm = ({
   selectedWallet,
   onSuccess,
 }: ExistentAssetFormProps) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      symbol: "",
+      name: "",
+      type: "stock",
+      currentPrice: 0,
       purchasePrice: 0,
       quantity: 0,
     },
@@ -53,7 +56,7 @@ export const ExistentAssetForm = ({
   const [globalError, setGlobalError] = useState<string | null>();
 
   const mutation = useMutation({
-    mutationFn: addExistentAssetInNewWallet,
+    mutationFn: editAssetInWallet,
     onSuccess: () => {
       setGlobalError("");
       onSuccess();
@@ -66,13 +69,14 @@ export const ExistentAssetForm = ({
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
+    const { name, purchasePrice, quantity, currentPrice, type } = values;
     mutation.mutate({
       wallet: selectedWallet,
-      asset: {
-        symbol: values.symbol,
-        purchasePrice: values.purchasePrice,
-        quantity: values.quantity,
+      assetOnWallet: {
+        purchasePrice,
+        quantity,
       },
+      assetDbData: { name, type, currentPrice },
     });
   }
 
@@ -82,27 +86,44 @@ export const ExistentAssetForm = ({
         <p className="text-destructive text-center">{globalError}</p>
       )}
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        {/* Asset Name */}
         <FormField
           control={form.control}
-          name="symbol"
+          name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Asset Info</FormLabel>
+              <FormLabel>Asset Name</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="Bitcoin"
+                  {...field}
+                  onChange={(e) => field.onChange(e.target.value)}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Asset Type */}
+        <FormField
+          control={form.control}
+          name="type"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Asset Type</FormLabel>
               <FormControl>
                 <Select
                   onValueChange={field.onChange}
                   value={field.value}
-                  defaultValue=""
+                  defaultValue="stock"
                 >
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select asset…" />
+                    <SelectValue placeholder="Select type…" />
                   </SelectTrigger>
                   <SelectContent>
-                    {otherWalletsAssets.map(({ symbol, name }) => (
-                      <SelectItem key={symbol} value={symbol}>
-                        {symbol} {name && <>({name})</>}
-                      </SelectItem>
-                    ))}
+                    <SelectItem value="stock">Stock</SelectItem>
+                    <SelectItem value="crypto">Crypto</SelectItem>
                   </SelectContent>
                 </Select>
               </FormControl>
@@ -111,6 +132,28 @@ export const ExistentAssetForm = ({
           )}
         />
 
+        {/* Current Price */}
+        <FormField
+          control={form.control}
+          name="currentPrice"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Current Price ($)</FormLabel>
+              <FormControl>
+                <Input
+                  type="number"
+                  inputMode="decimal"
+                  placeholder="20.00"
+                  {...field}
+                  onChange={(e) => field.onChange(Number(e.target.value))}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Purchase Price */}
         <FormField
           control={form.control}
           name="purchasePrice"
@@ -131,6 +174,7 @@ export const ExistentAssetForm = ({
           )}
         />
 
+        {/* Quantity */}
         <FormField
           control={form.control}
           name="quantity"
@@ -151,7 +195,7 @@ export const ExistentAssetForm = ({
         />
 
         <Button type="submit" className="w-full" disabled={mutation.isPending}>
-          {mutation.isPending ? "Adding…" : "Submit"}
+          {mutation.isPending ? "Submitting…" : "Submit"}
         </Button>
       </form>
     </Form>

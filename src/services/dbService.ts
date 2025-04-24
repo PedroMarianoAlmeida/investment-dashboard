@@ -191,3 +191,19 @@ export const addNewAssetInNewWallet = async ({
     return { success: true };
   });
 };
+
+interface UpdateAssetFromDb {
+  assetDbData: AssetFromDb;
+}
+
+interface UpdateAssetOnWallet {
+  assetOnWallet: Omit<AssetOnWallet, "symbol">;
+  wallet: string;
+}
+interface EditAssetInWalletProps
+  extends UpdateAssetFromDb,
+    UpdateAssetOnWallet {}
+
+export const editAssetInWallet = async ({}: EditAssetInWalletProps) => {
+  return asyncWrapper(async () => {});
+};
