@@ -14,6 +14,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 import { ExistentAssetForm } from "@/components/assets/forms/existent-asset-form";
 import { NewAssetIntoWalletForm } from "@/components/assets/forms/new-asset-into-wallet-form";
 
@@ -35,8 +37,31 @@ export const AddAsset = ({
           <AlertDialogDescription>
             Add a new asset into Wallet
           </AlertDialogDescription>
-          {/* <ExistentAssetForm otherWalletsAssets={otherWalletsAssets} selectedWallet={selectedWallet}/> */}
-          <NewAssetIntoWalletForm  otherWalletsAssets={otherWalletsAssets} selectedWallet={selectedWallet}/>
+          {otherWalletsAssets.length === 0 ? (
+            <NewAssetIntoWalletForm
+              otherWalletsAssets={otherWalletsAssets}
+              selectedWallet={selectedWallet}
+            />
+          ) : (
+            <Tabs defaultValue="existent-asset">
+              <TabsList className="w-full">
+                <TabsTrigger value="existent-asset">Existent Asset</TabsTrigger>
+                <TabsTrigger value="new-asset">New Asset</TabsTrigger>
+              </TabsList>
+              <TabsContent value="existent-asset">
+                <ExistentAssetForm
+                  otherWalletsAssets={otherWalletsAssets}
+                  selectedWallet={selectedWallet}
+                />
+              </TabsContent>
+              <TabsContent value="new-asset">
+                <NewAssetIntoWalletForm
+                  otherWalletsAssets={otherWalletsAssets}
+                  selectedWallet={selectedWallet}
+                />
+              </TabsContent>
+            </Tabs>
+          )}
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>

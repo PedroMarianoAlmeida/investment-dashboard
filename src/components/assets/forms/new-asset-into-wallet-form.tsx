@@ -110,7 +110,7 @@ export const NewAssetIntoWalletForm = ({
           name="type"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Pick an asset</FormLabel>
+              <FormLabel>Asset type</FormLabel>
               <FormControl>
                 <Select
                   onValueChange={field.onChange}

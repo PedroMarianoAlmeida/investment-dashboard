@@ -64,7 +64,7 @@ export const ExistentAssetForm = ({
           name="symbol"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Asset type</FormLabel>
+              <FormLabel>Asset Info</FormLabel>
               <FormControl>
                 <Select
                   onValueChange={field.onChange}
