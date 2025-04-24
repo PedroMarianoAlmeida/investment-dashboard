@@ -16,7 +16,11 @@ export const WalletSection = ({
       <div className="flex flex-col gap-2">
         <WalletTable wallets={walletsTreated} />
         <NewWallet />
-        <WalletBarChart wallets={walletsTreated}/>
+        {walletsTreated.length !== 0 && (
+          <div className="w-full flex justify-center">
+            <WalletBarChart wallets={walletsTreated} />
+          </div>
+        )}
       </div>
     </Section>
   );
