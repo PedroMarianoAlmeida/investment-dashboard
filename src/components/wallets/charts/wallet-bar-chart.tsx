@@ -24,7 +24,7 @@ interface WalletBarChartProps {
 }
 export const WalletBarChart = ({ wallets }: WalletBarChartProps) => {
   return (
-    <div className="w-120">
+    <div className="w-full sm:w-120">
       <h3 className="text-center">Current vs. Spent Amount per Wallet</h3>
       <ChartContainer config={chartConfig} className="min-h-[200px]">
         <BarChart accessibilityLayer data={wallets}>

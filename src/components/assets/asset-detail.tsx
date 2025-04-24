@@ -29,7 +29,7 @@ export const AssetDetails = ({
           balance >= 0 ? "font-bold" : "text-destructive"
         }`}
       >
-        {numberToCurrency({ amount: balance, withCents: true })}
+        {numberToCurrency({ amount: balance })}
       </TableCell>
       <TableCell className="w-full flex gap-2 justify-center">
         <EditAsset

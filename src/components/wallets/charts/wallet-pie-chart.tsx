@@ -31,7 +31,7 @@ export const WalletPieChart = ({ wallets }: WalletPieChartProps) => {
   }, {} as ChartConfig);
 
   return (
-    <div className="w-120">
+    <div className="w-full sm:w-120">
       <h3 className="text-center">Share of Funds Across Wallets</h3>
       <ChartContainer config={chartConfig} className="min-h-[200px]">
         <PieChart>
