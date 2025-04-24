@@ -2,6 +2,7 @@ import { WalletTable } from "@/components/wallets/wallet-table";
 import { Section } from "@/components/layout/section";
 import { getWallets } from "@/services/walletService";
 import { WalletAndAssetDataFromDb } from "@/types/wallet";
+import { NewWallet } from "@/components/wallets/actions/new-wallet";
 
 export const WalletSection = ({
   assets,
@@ -13,6 +14,7 @@ export const WalletSection = ({
     <Section title="Wallets" id="wallets-heading">
       <div className="flex flex-col gap-2">
         <WalletTable wallets={walletsTreated} />
+        <NewWallet />
       </div>
     </Section>
   );
