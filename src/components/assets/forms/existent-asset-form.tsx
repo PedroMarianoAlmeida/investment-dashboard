@@ -54,10 +54,14 @@ export const ExistentAssetForm = ({
 
   const mutation = useMutation({
     mutationFn: addExistentAssetInNewWallet,
-    onSuccess: () => {
-      setGlobalError("");
-      onSuccess();
-      form.reset();
+    onSuccess: (data) => {
+      if (data.success) {
+        onSuccess();
+        setGlobalError("");
+        form.reset();
+      } else {
+        setGlobalError("Error, try again");
+      }
     },
     onError: (err) => {
       console.error(err);

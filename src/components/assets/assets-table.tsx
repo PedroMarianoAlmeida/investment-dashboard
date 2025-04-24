@@ -29,7 +29,7 @@ export const AssetsTable = ({ assets, selectedWallet }: AssetsTableProps) => {
           <TableHead className="text-muted-foreground text-right h-auto break-normal whitespace-normal">
             Purchase Price
           </TableHead>
-          <TableHead className="text-muted-foreground text-right h-auto break-normal whitespace-normal">
+          <TableHead className="text-muted-foreground text-center h-auto break-normal whitespace-normal">
             Actions
           </TableHead>
         </TableRow>

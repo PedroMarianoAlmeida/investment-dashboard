@@ -52,10 +52,14 @@ export const EditAssetIntoWalletForm = ({
 
   const mutation = useMutation({
     mutationFn: editAssetInWallet,
-    onSuccess: () => {
-      setGlobalError("");
-      onSuccess();
-      form.reset();
+    onSuccess: (data) => {
+      if (data.success) {
+        onSuccess();
+        setGlobalError("");
+        form.reset();
+      } else {
+        setGlobalError("Error, try again");
+      }
     },
     onError: (err) => {
       console.error(err);
