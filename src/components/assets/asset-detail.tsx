@@ -3,6 +3,7 @@ import { Asset } from "@/types/wallet";
 import { numberToCurrency } from "@/helpers/formatNumber";
 import { capitalizeFirstLetter } from "@/helpers/formatText";
 import { EditAsset } from "@/components/assets/actions/edit-asset";
+import { DeleteAsset } from "@/components/assets/actions/delete-asset";
 
 interface AssetDetailsProps {
   asset: Asset;
@@ -25,10 +26,14 @@ export const AssetDetails = ({
       <TableCell className="text-right w-full">
         {numberToCurrency({ amount: purchasePrice, withCents: true })}
       </TableCell>
-      <TableCell className="text-right w-full">
+      <TableCell className="text-right w-full flex gap-2 justify-center">
         <EditAsset
           selectedWallet={selectedWallet}
           originalData={{ type, quantity, purchasePrice, currentPrice, name }}
+          selectedAsset={symbol}
+        />
+        <DeleteAsset
+          selectedWallet={selectedWallet}
           selectedAsset={symbol}
         />
       </TableCell>

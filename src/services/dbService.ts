@@ -199,7 +199,6 @@ interface EditAssetInWalletProps {
   assetDbData?: Partial<Pick<AssetFromDb, "name" | "type" | "currentPrice">>;
 }
 
-// services/dbService.ts
 export const editAssetInWallet = async ({
   wallet,
   symbol,
@@ -245,6 +244,49 @@ export const editAssetInWallet = async ({
     }
 
     revalidatePath("/dashboard");
+    return { success: true };
+  });
+};
+
+interface DeleteAssetFromWalletProps {
+  wallet: string;
+  symbol: string;
+}
+export const deleteAssetFromWallet = async ({
+  symbol,
+  wallet,
+}: DeleteAssetFromWalletProps) => {
+  return asyncWrapper(async () => {
+    // 1) Auth
+    const session = await getServerSession(authOptions);
+    if (!session) throw new Error("No session");
+    const userId = session.user.id;
+
+    // 2) Point at the wallet doc
+    const walletDocRef = doc(
+      database,
+      "users",
+      userId,
+      "wallets",
+      wallet
+    ).withConverter(walletConverter);
+
+    // 3) Fetch current wallet data
+    const walletSnap = await getDoc(walletDocRef);
+    if (!walletSnap.exists()) {
+      throw new Error(`Wallet "${wallet}" not found for user ${userId}`);
+    }
+    const walletData = walletSnap.data();
+
+    // 4) Remove the asset by symbol
+    const updatedAssets = walletData.assets.filter((a) => a.symbol !== symbol);
+
+    // 5) Write back the filtered array
+    await updateDoc(walletDocRef, { assets: updatedAssets });
+
+    // 6) Revalidate your dashboard
+    revalidatePath("/dashboard");
+
     return { success: true };
   });
 };
