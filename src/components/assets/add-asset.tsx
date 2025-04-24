@@ -29,7 +29,7 @@ export const AddAsset = ({
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button>New Asset</Button>
+        <Button className="w-40">New Asset</Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>

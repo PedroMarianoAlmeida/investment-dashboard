@@ -33,11 +33,13 @@ export const AssetSection = ({
   } = assetsWallet;
   return (
     <Section title="Assets" id="assets-heading">
-      <AssetsTable assets={existentAssets} />
-      <AddAsset
-        otherWalletsAssets={otherWalletsAssets}
-        selectedWallet={selectedWalletId}
-      />
+      <div className="flex flex-col gap-2">
+        <AssetsTable assets={existentAssets} />
+        <AddAsset
+          otherWalletsAssets={otherWalletsAssets}
+          selectedWallet={selectedWalletId}
+        />
+      </div>
     </Section>
   );
 };
