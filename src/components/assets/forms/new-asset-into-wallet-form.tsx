@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useMutation } from "@tanstack/react-query";
 
 import {
   Form,
@@ -36,30 +38,45 @@ const formSchema = z.object({
 interface NewAssetIntoWalletFormProps extends OtherWalletsAssets {
   // TODO: Get all assets code to validate that it is really a new one
   selectedWallet: string;
+  onSuccess(): void;
 }
 
 export const NewAssetIntoWalletForm = ({
   selectedWallet,
+  onSuccess,
 }: NewAssetIntoWalletFormProps) => {
-  // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       symbol: "",
-      purchasePrice: 0,
-      quantity: 0,
+      quantity: 1,
       name: "",
       type: "stock",
-      currentPrice: 0,
     },
   });
 
+  const mutation = useMutation({
+    mutationFn: addNewAssetInNewWallet,
+    onSuccess: (data) => {
+      if (data.success) {
+        onSuccess();
+        setGlobalError("");
+        form.reset();
+      } else {
+        setGlobalError("Error, try again");
+      }
+    },
+    onError: () => {
+      setGlobalError("Error, try again");
+    },
+  });
+
+  const [globalError, setGlobalError] = useState<string | null>();
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    // TODO: Add query mutation
-    console.log(values);
     const { purchasePrice, quantity, symbol, name, type, currentPrice } =
       values;
-    await addNewAssetInNewWallet({
+    mutation.mutate({
       wallet: selectedWallet,
       assetDbData: { currentPrice, name, type },
       assetOnWallet: { purchasePrice, quantity, symbol },
@@ -68,7 +85,14 @@ export const NewAssetIntoWalletForm = ({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-2 gap-8">
+      {globalError && (
+        <p className="text-destructive text-center">{globalError}</p>
+      )}
+
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="grid grid-cols-2 gap-8"
+      >
         <FormField
           control={form.control}
           name="symbol"
@@ -99,32 +123,6 @@ export const NewAssetIntoWalletForm = ({
                   {...field}
                   onChange={(e) => field.onChange(e.target.value)}
                 />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="type"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Asset type</FormLabel>
-              <FormControl>
-                <Select
-                  onValueChange={field.onChange}
-                  value={field.value}
-                  defaultValue="stock"
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select asset…" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="stock">Stock</SelectItem>
-                    <SelectItem value="crypto">Crypto</SelectItem>
-                  </SelectContent>
-                </Select>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -173,6 +171,32 @@ export const NewAssetIntoWalletForm = ({
 
         <FormField
           control={form.control}
+          name="type"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Asset type</FormLabel>
+              <FormControl>
+                <Select
+                  onValueChange={field.onChange}
+                  value={field.value}
+                  defaultValue="stock"
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select asset…" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="stock">Stock</SelectItem>
+                    <SelectItem value="crypto">Crypto</SelectItem>
+                  </SelectContent>
+                </Select>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
           name="quantity"
           render={({ field }) => (
             <FormItem>
@@ -189,7 +213,9 @@ export const NewAssetIntoWalletForm = ({
             </FormItem>
           )}
         />
-        <Button type="submit" className="col-span-2">Submit</Button>
+        <Button type="submit" className="w-full" disabled={mutation.isPending}>
+          {mutation.isPending ? "Adding…" : "Submit"}
+        </Button>
       </form>
     </Form>
   );
