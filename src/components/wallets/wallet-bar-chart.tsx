@@ -1,5 +1,5 @@
 "use client";
-
+import { WalletWithId } from "@/types/wallet";
 import {
   ChartConfig,
   ChartContainer,
@@ -10,43 +10,49 @@ import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 
 const chartConfig = {
   desktop: {
-    label: "Desktop",
+    label: "Current Amount",
     color: "var(--chart-1)",
   },
   mobile: {
-    label: "Mobile",
+    label: "Purchase Amount",
     color: "var(--chart-2)",
   },
 } satisfies ChartConfig;
 
-export const WalletBarChart = () => {
-  const chartData = [
-    { month: "January", desktop: 186, mobile: 80 },
-    { month: "February", desktop: 305, mobile: 200 },
-    { month: "March", desktop: 237, mobile: 120 },
-    { month: "April", desktop: 73, mobile: 190 },
-    { month: "May", desktop: 209, mobile: 130 },
-    { month: "June", desktop: 214, mobile: 140 },
-  ];
-
+interface WalletBarChartProps {
+  wallets: WalletWithId[];
+}
+export const WalletBarChart = ({ wallets }: WalletBarChartProps) => {
   return (
-    <ChartContainer config={chartConfig} className="min-h-[200px] w-100">
-      <BarChart accessibilityLayer data={chartData}>
-        <CartesianGrid vertical={false} />
-        <XAxis
-          dataKey="month"
-          tickLine={false}
-          tickMargin={10}
-          axisLine={false}
-          tickFormatter={(value) => value.slice(0, 3)}
-        />
-        <ChartTooltip
-          cursor={false}
-          content={<ChartTooltipContent indicator="dashed" />}
-        />
-        <Bar dataKey="desktop" fill="var(--color-desktop)" radius={4} />
-        <Bar dataKey="mobile" fill="var(--color-mobile)" radius={4} />
-      </BarChart>
-    </ChartContainer>
+    <div className="w-120">
+      <h3 className="text-center">Current vs. Spent Amount per Wallet</h3>
+      <ChartContainer config={chartConfig} className="min-h-[200px]">
+        <BarChart accessibilityLayer data={wallets}>
+          <CartesianGrid vertical={false} />
+          <XAxis
+            dataKey="walletName"
+            tickLine={false}
+            tickMargin={10}
+            axisLine={false}
+          />
+          <ChartTooltip
+            cursor={false}
+            content={<ChartTooltipContent indicator="dashed" />}
+          />
+          <Bar
+            dataKey="currentAmount"
+            fill="var(--color-desktop)"
+            radius={4}
+            name="Current Amount"
+          />
+          <Bar
+            dataKey="spentAmount"
+            fill="var(--color-mobile)"
+            radius={4}
+            name="Purchase Amount"
+          />
+        </BarChart>
+      </ChartContainer>
+    </div>
   );
 };

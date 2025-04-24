@@ -16,7 +16,7 @@ export const WalletSection = ({
       <div className="flex flex-col gap-2">
         <WalletTable wallets={walletsTreated} />
         <NewWallet />
-        <WalletBarChart />
+        <WalletBarChart wallets={walletsTreated}/>
       </div>
     </Section>
   );
