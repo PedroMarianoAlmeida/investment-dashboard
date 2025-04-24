@@ -74,6 +74,17 @@ export const EditAssetIntoWalletForm = ({
     });
   }
 
+  const values = form.watch();
+  const isUnchanged =
+    JSON.stringify(values) ===
+    JSON.stringify({
+      name: originalData.name,
+      type: originalData.type,
+      currentPrice: originalData.currentPrice,
+      purchasePrice: originalData.purchasePrice,
+      quantity: originalData.quantity,
+    });
+
   return (
     <Form {...form}>
       {globalError && (
@@ -188,7 +199,11 @@ export const EditAssetIntoWalletForm = ({
           )}
         />
 
-        <Button type="submit" className="w-full" disabled={mutation.isPending}>
+        <Button
+          type="submit"
+          className="w-full"
+          disabled={isUnchanged || mutation.isPending}
+        >
           {mutation.isPending ? "Submitting…" : "Submit"}
         </Button>
       </form>
