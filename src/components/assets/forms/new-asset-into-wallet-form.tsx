@@ -22,7 +22,7 @@ import {
 import { Input } from "@/components/ui/input";
 
 import { Button } from "@/components/ui/button";
-import { OtherWalletsAssets } from "@/types/wallet";
+import { OtherWalletsAssets, Asset } from "@/types/wallet";
 
 import { addNewAssetInNewWallet } from "@/services/dbService";
 
@@ -36,14 +36,16 @@ const formSchema = z.object({
 });
 
 interface NewAssetIntoWalletFormProps extends OtherWalletsAssets {
-  // TODO: Get all assets code to validate that it is really a new one
   selectedWallet: string;
   onSuccess(): void;
+  assets: Asset[];
 }
 
 export const NewAssetIntoWalletForm = ({
   selectedWallet,
   onSuccess,
+  otherWalletsAssets,
+  assets,
 }: NewAssetIntoWalletFormProps) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -76,14 +78,13 @@ export const NewAssetIntoWalletForm = ({
   const [globalError, setGlobalError] = useState<string | null>();
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    // 1) parse
+    // 1) parse values to numbers
     const currentPrice = Number(values.currentPrice);
     const purchasePrice = Number(values.purchasePrice);
     const quantity = Number(values.quantity);
 
     // 2) validate > 0
     let hasError = false;
-
     if (currentPrice <= 0) {
       form.setError("currentPrice", {
         type: "manual",
@@ -105,9 +106,20 @@ export const NewAssetIntoWalletForm = ({
       });
       hasError = true;
     }
-
-    // 3) bail out if any
     if (hasError) return;
+
+    // 3) validate unique symbol
+    const existingSymbols = [
+      ...otherWalletsAssets.map((a) => a.symbol),
+      ...assets.map((a) => a.symbol),
+    ];
+    if (existingSymbols.includes(values.symbol)) {
+      form.setError("symbol", {
+        type: "manual",
+        message: "Symbol already exists",
+      });
+      return;
+    }
 
     // 4) all good → fire mutation
     mutation.mutate({
