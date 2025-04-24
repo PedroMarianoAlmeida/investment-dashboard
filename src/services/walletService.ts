@@ -3,6 +3,7 @@ import {
   WalletAndAssetDataFromDb,
   AssetType,
   WalletWithIdWithoutAssets,
+  OtherWalletsAssets,
 } from "@/types/wallet";
 
 export function getWallets({
@@ -65,18 +66,15 @@ interface GetAssetsFromWalletParams extends WalletAndAssetDataFromDb {
 export function getAssetsFromWallet({
   assets: assetMap,
   wallets: walletMap,
-  selectedWallet,
+  selectedWallet, // now the wallet’s ID
 }: GetAssetsFromWalletParams):
   | AssetsFromWalletReturnSuccess
   | AssetsFromWalletReturnFail {
-  // 1) Find the wallet entry ID and data whose .name matches selectedWallet
-  const entry = Array.from(walletMap.entries()).find(
-    ([, w]) => w.name === selectedWallet
-  );
-  if (!entry) {
+  // 1) Grab the WalletFromDb by its ID
+  const walletDb = walletMap.get(selectedWallet);
+  if (!walletDb) {
     return { success: false };
   }
-  const [selectedWalletId, walletDb] = entry;
 
   // 2) Rehydrate each asset for the selected wallet
   const fullAssets: Asset[] = walletDb.assets.map(
@@ -96,19 +94,20 @@ export function getAssetsFromWallet({
     }
   );
 
-  // 3) Determine which assets exist in assetMap but are not held in the selected wallet
-  const selectedSymbols = new Set(fullAssets.map((a) => a.symbol));
-  const otherWalletsAssets = Array.from(assetMap.entries())
-    .filter(([symbol]) => !selectedSymbols.has(symbol))
-    .map(([symbol, db]) => ({
-      type: db.type,
-      symbol,
-      name: db.name,
-    }));
+  // 3) Assets in assetMap but not in the selected wallet
+  const held = new Set(fullAssets.map((a) => a.symbol));
+  const otherWalletsAssets: OtherWalletsAssets["otherWalletsAssets"] =
+    Array.from(assetMap.entries())
+      .filter(([symbol]) => !held.has(symbol))
+      .map(([symbol, db]) => ({
+        type: db.type,
+        symbol,
+        name: db.name,
+      }));
 
   return {
     success: true,
-    selectedWalletId,
+    selectedWalletId: selectedWallet,
     assets: fullAssets,
     otherWalletsAssets,
   };
