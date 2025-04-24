@@ -8,6 +8,7 @@ import { WalletAndAssetDataFromDb } from "@/types/wallet";
 import { AddAsset } from "@/components/assets/actions/add-asset";
 import { Button } from "@/components/ui/button";
 import { AssetBarChart } from "@/components/assets/charts/asset-bar-chart";
+import { AssetPieChart } from "@/components/assets/charts/asset-pie-chart";
 interface AssetSectionProps extends WalletAndAssetDataFromDb {
   selectedWallet?: string;
 }
@@ -58,6 +59,7 @@ export const AssetSection = ({
         {existentAssets.length !== 0 && (
           <div className="w-full flex justify-center">
             <AssetBarChart assets={existentAssets} />
+            <AssetPieChart assets={existentAssets} />
           </div>
         )}
       </div>
