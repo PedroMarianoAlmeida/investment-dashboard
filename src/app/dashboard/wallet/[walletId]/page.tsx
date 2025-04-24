@@ -2,13 +2,13 @@ import { getUserData } from "@/services/dbService";
 import { AssetSection } from "@/components/assets/assets-section";
 
 interface WalletDetailsPageProps {
-  params: { walletId: string };
+  params: Promise<{ walletId: string }>;
 }
 
 export default async function WalletDetailsPage({
   params,
 }: WalletDetailsPageProps) {
-  const walletId = params.walletId;
+  const { walletId } = await params;
   const data = await getUserData();
   if (!data.success) return <p>Error fetching data</p>;
   const {
