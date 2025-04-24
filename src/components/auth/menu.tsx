@@ -1,5 +1,6 @@
 "use client";
 import { ReactNode } from "react";
+import Link from "next/link";
 import { signIn, signOut } from "next-auth/react";
 import { useSession } from "next-auth/react";
 
@@ -58,9 +59,16 @@ export const AuthMenu = () => {
   return (
     <MenuCommon
       content={
-        <MenubarItem onClick={() => signOut()} className="justify-center">
-          Sign Out
-        </MenubarItem>
+        <>
+          <MenubarItem onClick={() => signOut()} className="justify-center">
+            Sign Out
+          </MenubarItem>
+          <MenubarItem asChild className="flex justify-center w-full">
+            <Link href="/dashboard" className="block text-center">
+              Dashboard
+            </Link>
+          </MenubarItem>
+        </>
       }
       trigger={
         <Avatar className="w-10 h-10">
