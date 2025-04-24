@@ -5,7 +5,6 @@ import { z } from "zod";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -83,7 +82,6 @@ export const NewAssetIntoWalletForm = ({
                   onChange={(e) => field.onChange(e.target.value)}
                 />
               </FormControl>
-              <FormDescription>The symbol of this Asset</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -102,7 +100,6 @@ export const NewAssetIntoWalletForm = ({
                   onChange={(e) => field.onChange(e.target.value)}
                 />
               </FormControl>
-              <FormDescription>The name of this Asset</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -149,7 +146,6 @@ export const NewAssetIntoWalletForm = ({
                   onChange={(e) => field.onChange(Number(e.target.value))}
                 />
               </FormControl>
-              <FormDescription>The value that you buy it</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -170,7 +166,6 @@ export const NewAssetIntoWalletForm = ({
                   onChange={(e) => field.onChange(Number(e.target.value))}
                 />
               </FormControl>
-              <FormDescription>The value that you buy it</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -190,7 +185,6 @@ export const NewAssetIntoWalletForm = ({
                   onChange={(e) => field.onChange(Number(e.target.value))}
                 />
               </FormControl>
-              <FormDescription>How many you buy</FormDescription>
               <FormMessage />
             </FormItem>
           )}

@@ -5,7 +5,6 @@ import { z } from "zod";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -104,7 +103,6 @@ export const ExistentAssetForm = ({
                   onChange={(e) => field.onChange(Number(e.target.value))}
                 />
               </FormControl>
-              <FormDescription>The value that you buy it</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -124,7 +122,6 @@ export const ExistentAssetForm = ({
                   onChange={(e) => field.onChange(Number(e.target.value))}
                 />
               </FormControl>
-              <FormDescription>How many you buy</FormDescription>
               <FormMessage />
             </FormItem>
           )}
