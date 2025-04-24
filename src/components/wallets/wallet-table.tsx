@@ -18,9 +18,9 @@ export const WalletTable = ({ wallets }: WalletsTableProps) => {
     <Table className="rounded-lg border border-separate border-spacing-0 p-2">
       <TableHeader>
         <TableRow className="grid grid-cols-4 pb-2">
-          <TableHead className="text-muted-foreground h-auto">Name</TableHead>
-          <TableHead className="text-muted-foreground h-auto">Assets</TableHead>
-          <TableHead className="text-muted-foreground text-right h-auto">
+          <TableHead className="text-muted-foreground text-center h-auto">Name</TableHead>
+          <TableHead className="text-muted-foreground text-center h-auto">Assets</TableHead>
+          <TableHead className="text-muted-foreground text-center h-auto">
             Balance
           </TableHead>
           <TableHead className="text-muted-foreground text-center h-auto">

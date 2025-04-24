@@ -18,18 +18,18 @@ export const WalletsDetails = ({
   console.log({ assets });
   return (
     <TableRow className="grid grid-cols-4 place-items-center">
-      <TableCell className="text-base break-normal whitespace-normal text-left w-full">
+      <TableCell className="text-base break-normal whitespace-normal text-center w-full">
         {walletName}
       </TableCell>
-      <TableCell className="text-right w-full flex gap-1 flex-wrap">
+      <TableCell className="text-center w-full flex gap-1 flex-wrap justify-center">
         {assets.map(({ symbol }) => (
           <Badge key={symbol}>{symbol}</Badge>
         ))}
       </TableCell>
-      <TableCell className={`text-right w-full ${profitLoss >= 0 ? "font-bold": "text-destructive"}`}>
+      <TableCell className={`text-center w-full ${profitLoss >= 0 ? "font-bold": "text-destructive"}`}>
         {numberToCurrency({ amount: profitLoss })}
       </TableCell>
-      <TableCell className="text-right w-full flex gap-2 justify-center">
+      <TableCell className="w-full flex gap-2 justify-center">
         <Link href={`/dashboard/wallet/${id}`}>
           <Button className="cursor-pointer">
             <Eye />
