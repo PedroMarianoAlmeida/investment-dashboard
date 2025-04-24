@@ -48,11 +48,9 @@ export const NewAssetIntoWalletForm = ({
     resolver: zodResolver(formSchema),
     defaultValues: {
       symbol: "",
-      purchasePrice: 0,
-      quantity: 0,
+      quantity: 1,
       name: "",
       type: "stock",
-      currentPrice: 0,
     },
   });
 
@@ -65,7 +63,7 @@ export const NewAssetIntoWalletForm = ({
       assetDbData: { currentPrice, name, type },
       assetOnWallet: { purchasePrice, quantity, symbol },
     });
-    onSuccess()
+    onSuccess();
   }
 
   return (
@@ -112,32 +110,6 @@ export const NewAssetIntoWalletForm = ({
 
         <FormField
           control={form.control}
-          name="type"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Asset type</FormLabel>
-              <FormControl>
-                <Select
-                  onValueChange={field.onChange}
-                  value={field.value}
-                  defaultValue="stock"
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select asset…" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="stock">Stock</SelectItem>
-                    <SelectItem value="crypto">Crypto</SelectItem>
-                  </SelectContent>
-                </Select>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
           name="currentPrice"
           render={({ field }) => (
             <FormItem>
@@ -170,6 +142,32 @@ export const NewAssetIntoWalletForm = ({
                   {...field}
                   onChange={(e) => field.onChange(Number(e.target.value))}
                 />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="type"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Asset type</FormLabel>
+              <FormControl>
+                <Select
+                  onValueChange={field.onChange}
+                  value={field.value}
+                  defaultValue="stock"
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select asset…" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="stock">Stock</SelectItem>
+                    <SelectItem value="crypto">Crypto</SelectItem>
+                  </SelectContent>
+                </Select>
               </FormControl>
               <FormMessage />
             </FormItem>
