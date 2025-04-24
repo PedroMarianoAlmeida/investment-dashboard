@@ -1,91 +1,43 @@
 "use server";
-import { getServerSession } from "next-auth/next";
 import { revalidatePath } from "next/cache";
 import {
-  collection,
   getDocs,
   getDoc,
-  doc,
-  FirestoreDataConverter,
-  DocumentData,
-  QueryDocumentSnapshot,
   updateDoc,
   arrayUnion,
   setDoc,
   deleteDoc,
+  doc,
 } from "firebase/firestore";
 
-import { database } from "@/config/databaseConfig";
-import { authOptions } from "@/config/authConfig";
 import { asyncWrapper } from "@/helpers/asyncWrapper";
+import {
+  getUserAssetsCollection,
+  getUserAssetDoc,
+  getUserWalletDoc,
+  getUserWalletsCollection,
+} from "@/helpers/firebase";
 
 import { WalletFromDb, AssetFromDb, AssetOnWallet } from "@/types/wallet";
 
-const walletConverter: FirestoreDataConverter<WalletFromDb> = {
-  toFirestore(wallet) {
-    return { name: wallet.name, assets: wallet.assets };
-  },
-  fromFirestore(snapshot: QueryDocumentSnapshot<DocumentData>) {
-    const data = snapshot.data();
-    return {
-      name: data.name,
-      assets: data.assets,
-    };
-  },
-};
-
-const assetConverter: FirestoreDataConverter<AssetFromDb> = {
-  toFirestore(asset) {
-    // If you ever .set() or .add() an AssetFromDb
-    return {
-      name: asset.name,
-      type: asset.type,
-      currentPrice: asset.currentPrice,
-    };
-  },
-  fromFirestore(snapshot: QueryDocumentSnapshot<DocumentData>) {
-    const data = snapshot.data();
-    return {
-      name: data.name,
-      type: data.type,
-      currentPrice: data.currentPrice,
-    };
-  },
-};
-
-const getUserId = async (): Promise<string> => {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.id) {
-    throw new Error("Authentication required");
-  }
-  return session.user.id;
-};
-
 export const getUserData = async () => {
   return asyncWrapper(async () => {
-    const userId = await getUserId();
-    const walletsCol = collection(
-      database,
-      "users",
-      userId,
-      "wallets"
-    ).withConverter(walletConverter);
-    const walletsSnap = await getDocs(walletsCol);
-    const wallets = new Map<string, WalletFromDb>();
-    walletsSnap.docs.forEach((docSnap) => {
-      wallets.set(docSnap.id, docSnap.data());
-    });
-    const assetsCol = collection(
-      database,
-      "users",
-      userId,
-      "assets"
-    ).withConverter(assetConverter);
-    const assetsSnap = await getDocs(assetsCol);
-    const assets = new Map<string, AssetFromDb>();
-    assetsSnap.docs.forEach((docSnap) => {
-      assets.set(docSnap.id, docSnap.data());
-    });
+    const [walletsCol, assetsCol] = await Promise.all([
+      getUserWalletsCollection(),
+      getUserAssetsCollection(),
+    ]);
+
+    const [walletsSnap, assetsSnap] = await Promise.all([
+      getDocs(walletsCol),
+      getDocs(assetsCol),
+    ]);
+
+    const wallets = new Map<string, WalletFromDb>(
+      walletsSnap.docs.map((doc) => [doc.id, doc.data()])
+    );
+    const assets = new Map<string, AssetFromDb>(
+      assetsSnap.docs.map((doc) => [doc.id, doc.data()])
+    );
 
     return { data: { wallets, assets } };
   });
@@ -101,19 +53,9 @@ export const addExistentAssetInNewWallet = async ({
   wallet,
 }: AddExistentAssetInNewWalletParams) => {
   return asyncWrapper(async () => {
-    const userId = await getUserId();
-
-    const walletDocRef = doc(
-      database,
-      "users",
-      userId,
-      "wallets",
-      wallet
-    ).withConverter(walletConverter);
-
+    const walletDocRef = await getUserWalletDoc(wallet);
     const walletSnap = await getDoc(walletDocRef);
-    if (!walletSnap.exists())
-      throw new Error(`Wallet "${wallet}" not found for user ${userId}`);
+    if (!walletSnap.exists()) throw new Error(`Wallet "${wallet}" not found`);
 
     const walletData = walletSnap.data();
 
@@ -146,16 +88,7 @@ export const addNewAssetInNewWallet = async ({
   wallet,
 }: AddNewAssetInNewWalletProps) => {
   return asyncWrapper(async () => {
-    const userId = await getUserId();
-
-    const assetDocRef = doc(
-      database,
-      "users",
-      userId,
-      "assets",
-      assetOnWallet.symbol
-    ).withConverter(assetConverter);
-
+    const assetDocRef = await getUserAssetDoc(assetOnWallet.symbol);
     const assetSnap = await getDoc(assetDocRef);
     if (assetSnap.exists()) {
       throw new Error(
@@ -165,17 +98,10 @@ export const addNewAssetInNewWallet = async ({
 
     await setDoc(assetDocRef, assetDbData);
 
-    const walletDocRef = doc(
-      database,
-      "users",
-      userId,
-      "wallets",
-      wallet
-    ).withConverter(walletConverter);
-
+    const walletDocRef = await getUserWalletDoc(wallet);
     const walletSnap = await getDoc(walletDocRef);
     if (!walletSnap.exists()) {
-      throw new Error(`Wallet "${wallet}" not found for user ${userId}`);
+      throw new Error(`Wallet "${wallet}" not found`);
     }
 
     await updateDoc(walletDocRef, {
@@ -201,28 +127,13 @@ export const editAssetInWallet = async ({
   assetDbData,
 }: EditAssetInWalletProps) => {
   return asyncWrapper(async () => {
-    const userId = await getUserId();
-
     if (assetDbData) {
-      const assetDocRef = doc(
-        database,
-        "users",
-        userId,
-        "assets",
-        symbol
-      ).withConverter(assetConverter);
+      const assetDocRef = await getUserAssetDoc(symbol);
       await updateDoc(assetDocRef, assetDbData);
     }
 
     if (assetOnWallet) {
-      const walletDocRef = doc(
-        database,
-        "users",
-        userId,
-        "wallets",
-        wallet
-      ).withConverter(walletConverter);
-
+      const walletDocRef = await getUserWalletDoc(wallet);
       const snap = await getDoc(walletDocRef);
       if (!snap.exists()) throw new Error(`Wallet "${wallet}" not found`);
 
@@ -250,19 +161,10 @@ export const deleteAssetFromWallet = async ({
   wallet,
 }: DeleteAssetFromWalletProps) => {
   return asyncWrapper(async () => {
-    const userId = await getUserId();
-
-    const walletDocRef = doc(
-      database,
-      "users",
-      userId,
-      "wallets",
-      wallet
-    ).withConverter(walletConverter);
-
+    const walletDocRef = await getUserWalletDoc(wallet);
     const walletSnap = await getDoc(walletDocRef);
     if (!walletSnap.exists()) {
-      throw new Error(`Wallet "${wallet}" not found for user ${userId}`);
+      throw new Error(`Wallet "${wallet}" not found`);
     }
     const walletData = walletSnap.data();
 
@@ -281,15 +183,7 @@ export const deleteAssetFromWallet = async ({
 
 export const createEmptyWallet = async (walletName: string) => {
   return asyncWrapper(async () => {
-    const userId = await getUserId();
-
-    const walletsCol = collection(
-      database,
-      "users",
-      userId,
-      "wallets"
-    ).withConverter(walletConverter);
-
+    const walletsCol = await getUserWalletsCollection();
     const newWalletRef = doc(walletsCol);
 
     await setDoc(newWalletRef, {
@@ -305,16 +199,7 @@ export const createEmptyWallet = async (walletName: string) => {
 
 export const deleteWallet = async (walletId: string) => {
   return asyncWrapper(async () => {
-    const userId = await getUserId();
-
-    const walletDocRef = doc(
-      database,
-      "users",
-      userId,
-      "wallets",
-      walletId
-    ).withConverter(walletConverter);
-
+    const walletDocRef = await getUserWalletDoc(walletId);
     await deleteDoc(walletDocRef);
 
     revalidatePath("/dashboard");
