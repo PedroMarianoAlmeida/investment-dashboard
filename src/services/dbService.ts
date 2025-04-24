@@ -318,6 +318,7 @@ export const createEmptyWallet = async (walletName: string) => {
     // 5) Revalidate your dashboard so the new wallet shows up immediately
     revalidatePath("/dashboard");
 
-    return { success: true };
+    // 6) Return success and the new wallet’s ID
+    return { success: true, walletId: newWalletRef.id };
   });
 };

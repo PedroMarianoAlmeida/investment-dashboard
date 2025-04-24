@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -35,6 +36,7 @@ export const NewWalletForm = ({ onSuccess }: ExistentAssetFormProps) => {
   });
 
   const [globalError, setGlobalError] = useState<string | null>();
+  const router = useRouter();
 
   const mutation = useMutation({
     mutationFn: createEmptyWallet,
@@ -43,6 +45,7 @@ export const NewWalletForm = ({ onSuccess }: ExistentAssetFormProps) => {
         onSuccess();
         setGlobalError("");
         form.reset();
+        router.push(`/dashboard/wallet/${data.result.walletId}`);
       } else {
         setGlobalError("Error, try again");
       }
