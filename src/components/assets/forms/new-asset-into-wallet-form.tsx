@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useMutation } from "@tanstack/react-query";
 
 import {
   Form,
@@ -43,7 +45,6 @@ export const NewAssetIntoWalletForm = ({
   selectedWallet,
   onSuccess,
 }: NewAssetIntoWalletFormProps) => {
-  // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -54,20 +55,40 @@ export const NewAssetIntoWalletForm = ({
     },
   });
 
+  const mutation = useMutation({
+    mutationFn: addNewAssetInNewWallet,
+    onSuccess: (data) => {
+      if (data.success) {
+        onSuccess();
+        setGlobalError("");
+        form.reset();
+      } else {
+        setGlobalError("Error, try again");
+      }
+    },
+    onError: () => {
+      setGlobalError("Error, try again");
+    },
+  });
+
+  const [globalError, setGlobalError] = useState<string | null>();
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    // TODO: Add query mutation
     const { purchasePrice, quantity, symbol, name, type, currentPrice } =
       values;
-    await addNewAssetInNewWallet({
+    mutation.mutate({
       wallet: selectedWallet,
       assetDbData: { currentPrice, name, type },
       assetOnWallet: { purchasePrice, quantity, symbol },
     });
-    onSuccess();
   }
 
   return (
     <Form {...form}>
+      {globalError && (
+        <p className="text-destructive text-center">{globalError}</p>
+      )}
+
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         className="grid grid-cols-2 gap-8"
@@ -192,8 +213,8 @@ export const NewAssetIntoWalletForm = ({
             </FormItem>
           )}
         />
-        <Button type="submit" className="col-span-2">
-          Submit
+        <Button type="submit" className="w-full" disabled={mutation.isPending}>
+          {mutation.isPending ? "Adding…" : "Submit"}
         </Button>
       </form>
     </Form>

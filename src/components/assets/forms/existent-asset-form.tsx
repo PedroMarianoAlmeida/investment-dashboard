@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useMutation } from "@tanstack/react-query";
 
 import {
   Form,
@@ -39,7 +41,6 @@ export const ExistentAssetForm = ({
   selectedWallet,
   onSuccess,
 }: ExistentAssetFormProps) => {
-  // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -49,19 +50,38 @@ export const ExistentAssetForm = ({
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    // TODO: Add query mutation
-    const { purchasePrice, quantity, symbol } = values;
-    await addExistentAssetInNewWallet({
-      asset: { purchasePrice, quantity, symbol },
+  const [globalError, setGlobalError] = useState<string | null>();
+
+  const mutation = useMutation({
+    mutationFn: addExistentAssetInNewWallet,
+    onSuccess: () => {
+      setGlobalError("");
+      onSuccess();
+      form.reset();
+    },
+    onError: (err) => {
+      console.error(err);
+      setGlobalError("Error, try again");
+    },
+  });
+
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    setGlobalError("");
+    mutation.mutate({
       wallet: selectedWallet,
+      asset: {
+        symbol: values.symbol,
+        purchasePrice: values.purchasePrice,
+        quantity: values.quantity,
+      },
     });
-    console.log("RUN");
-    onSuccess();
   }
 
   return (
     <Form {...form}>
+      {globalError && (
+        <p className="text-destructive text-center">{globalError}</p>
+      )}
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <FormField
           control={form.control}
@@ -130,8 +150,9 @@ export const ExistentAssetForm = ({
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full">
-          Submit
+
+        <Button type="submit" className="w-full" disabled={mutation.isPending}>
+          {mutation.isPending ? "Adding…" : "Submit"}
         </Button>
       </form>
     </Form>
