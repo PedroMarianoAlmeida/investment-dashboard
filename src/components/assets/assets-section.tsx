@@ -53,6 +53,7 @@ export const AssetSection = ({
           <AddAsset
             otherWalletsAssets={otherWalletsAssets}
             selectedWallet={selectedWalletId}
+            assets={existentAssets}
           />
         </div>
 

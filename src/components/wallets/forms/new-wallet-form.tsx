@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/button";
 import { createEmptyWallet } from "@/services/dbService";
 
 const formSchema = z.object({
-  name: z.string(),
+  name: z.string().nonempty("Name is required"),
 });
 
 interface ExistentAssetFormProps {

@@ -26,9 +26,9 @@ import { OtherWalletsAssets } from "@/types/wallet";
 import { addExistentAssetInNewWallet } from "@/services/dbService";
 
 const formSchema = z.object({
-  purchasePrice: z.number().min(0),
-  quantity: z.number().min(0),
-  symbol: z.string().nonempty("You must pick an asset"),
+  purchasePrice: z.string().nonempty(),
+  quantity: z.string().nonempty(),
+  symbol: z.string().nonempty(),
 });
 
 interface ExistentAssetFormProps extends OtherWalletsAssets {
@@ -45,8 +45,8 @@ export const ExistentAssetForm = ({
     resolver: zodResolver(formSchema),
     defaultValues: {
       symbol: "",
-      purchasePrice: 0,
-      quantity: 0,
+      purchasePrice: "",
+      quantity: "",
     },
   });
 
@@ -70,12 +70,35 @@ export const ExistentAssetForm = ({
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
+    const price = Number(values.purchasePrice);
+    const quantity = Number(values.quantity);
+
+    let hasError = false;
+    if (price <= 0) {
+      form.setError("purchasePrice", {
+        type: "manual",
+        message: "Must be greater than 0",
+      });
+      hasError = true;
+    }
+    if (quantity <= 0) {
+      form.setError("quantity", {
+        type: "manual",
+        message: "Must be greater than 0",
+      });
+      hasError = true;
+    }
+
+    if (hasError) {
+      return; // don’t call the mutation
+    }
+
     mutation.mutate({
       wallet: selectedWallet,
       asset: {
         symbol: values.symbol,
-        purchasePrice: values.purchasePrice,
-        quantity: values.quantity,
+        purchasePrice: price,
+        quantity: quantity,
       },
     });
   }
@@ -126,8 +149,8 @@ export const ExistentAssetForm = ({
                   type="number"
                   inputMode="decimal"
                   placeholder="20.00"
+                  min="0"
                   {...field}
-                  onChange={(e) => field.onChange(Number(e.target.value))}
                 />
               </FormControl>
               <FormMessage />
@@ -142,12 +165,7 @@ export const ExistentAssetForm = ({
             <FormItem>
               <FormLabel>Quantity</FormLabel>
               <FormControl>
-                <Input
-                  placeholder="5"
-                  type="number"
-                  {...field}
-                  onChange={(e) => field.onChange(Number(e.target.value))}
-                />
+                <Input placeholder="5" type="number" min="0" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

@@ -15,16 +15,18 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-import { OtherWalletsAssets } from "@/types/wallet";
+import { OtherWalletsAssets, Asset } from "@/types/wallet";
 import { ExistentAssetForm } from "@/components/assets/forms/existent-asset-form";
 import { NewAssetIntoWalletForm } from "@/components/assets/forms/new-asset-into-wallet-form";
 
 interface AddAssetProps extends OtherWalletsAssets {
   selectedWallet: string;
+  assets: Asset[];
 }
 export const AddAsset = ({
   otherWalletsAssets,
   selectedWallet,
+  assets,
 }: AddAssetProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const closeModal = () => {
@@ -49,6 +51,7 @@ export const AddAsset = ({
               otherWalletsAssets={otherWalletsAssets}
               selectedWallet={selectedWallet}
               onSuccess={closeModal}
+              assets={assets}
             />
           ) : (
             <Tabs defaultValue="existent-asset">
@@ -68,6 +71,7 @@ export const AddAsset = ({
                   otherWalletsAssets={otherWalletsAssets}
                   selectedWallet={selectedWallet}
                   onSuccess={closeModal}
+                  assets={assets}
                 />
               </TabsContent>
             </Tabs>

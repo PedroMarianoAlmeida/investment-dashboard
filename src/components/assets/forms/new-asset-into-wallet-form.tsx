@@ -22,36 +22,40 @@ import {
 import { Input } from "@/components/ui/input";
 
 import { Button } from "@/components/ui/button";
-import { OtherWalletsAssets } from "@/types/wallet";
+import { OtherWalletsAssets, Asset } from "@/types/wallet";
 
 import { addNewAssetInNewWallet } from "@/services/dbService";
 
 const formSchema = z.object({
-  purchasePrice: z.number().min(0),
-  quantity: z.number().min(0),
-  symbol: z.string().nonempty("You must pick an asset"),
-  name: z.string().nonempty("You must pick an asset"),
+  purchasePrice: z.string().nonempty(),
+  quantity: z.string().nonempty(),
+  symbol: z.string().nonempty(),
+  name: z.string().nonempty(),
   type: z.union([z.literal("stock"), z.literal("crypto")]),
-  currentPrice: z.number().min(0),
+  currentPrice: z.string().nonempty(),
 });
 
 interface NewAssetIntoWalletFormProps extends OtherWalletsAssets {
-  // TODO: Get all assets code to validate that it is really a new one
   selectedWallet: string;
   onSuccess(): void;
+  assets: Asset[];
 }
 
 export const NewAssetIntoWalletForm = ({
   selectedWallet,
   onSuccess,
+  otherWalletsAssets,
+  assets,
 }: NewAssetIntoWalletFormProps) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       symbol: "",
-      quantity: 1,
+      quantity: "1",
       name: "",
       type: "stock",
+      currentPrice: "",
+      purchasePrice: "",
     },
   });
 
@@ -74,12 +78,62 @@ export const NewAssetIntoWalletForm = ({
   const [globalError, setGlobalError] = useState<string | null>();
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const { purchasePrice, quantity, symbol, name, type, currentPrice } =
-      values;
+    // 1) parse values to numbers
+    const currentPrice = Number(values.currentPrice);
+    const purchasePrice = Number(values.purchasePrice);
+    const quantity = Number(values.quantity);
+
+    // 2) validate > 0
+    let hasError = false;
+    if (currentPrice <= 0) {
+      form.setError("currentPrice", {
+        type: "manual",
+        message: "Must be greater than 0",
+      });
+      hasError = true;
+    }
+    if (purchasePrice <= 0) {
+      form.setError("purchasePrice", {
+        type: "manual",
+        message: "Must be greater than 0",
+      });
+      hasError = true;
+    }
+    if (quantity <= 0) {
+      form.setError("quantity", {
+        type: "manual",
+        message: "Must be greater than 0",
+      });
+      hasError = true;
+    }
+    if (hasError) return;
+
+    // 3) validate unique symbol
+    const existingSymbols = [
+      ...otherWalletsAssets.map((a) => a.symbol),
+      ...assets.map((a) => a.symbol),
+    ];
+    if (existingSymbols.includes(values.symbol)) {
+      form.setError("symbol", {
+        type: "manual",
+        message: "Symbol already exists",
+      });
+      return;
+    }
+
+    // 4) all good → fire mutation
     mutation.mutate({
       wallet: selectedWallet,
-      assetDbData: { currentPrice, name, type },
-      assetOnWallet: { purchasePrice, quantity, symbol },
+      assetDbData: {
+        currentPrice,
+        name: values.name,
+        type: values.type,
+      },
+      assetOnWallet: {
+        symbol: values.symbol,
+        purchasePrice,
+        quantity,
+      },
     });
   }
 
@@ -100,11 +154,7 @@ export const NewAssetIntoWalletForm = ({
             <FormItem>
               <FormLabel>Code</FormLabel>
               <FormControl>
-                <Input
-                  placeholder="AAPL"
-                  {...field}
-                  onChange={(e) => field.onChange(e.target.value)}
-                />
+                <Input placeholder="AAPL" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -118,11 +168,7 @@ export const NewAssetIntoWalletForm = ({
             <FormItem>
               <FormLabel>Company Name</FormLabel>
               <FormControl>
-                <Input
-                  placeholder="Apple Inc"
-                  {...field}
-                  onChange={(e) => field.onChange(e.target.value)}
-                />
+                <Input placeholder="Apple Inc" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -139,9 +185,9 @@ export const NewAssetIntoWalletForm = ({
                 <Input
                   type="number"
                   inputMode="decimal"
-                  placeholder="20.00"
+                  placeholder="10.00"
+                  min="0"
                   {...field}
-                  onChange={(e) => field.onChange(Number(e.target.value))}
                 />
               </FormControl>
               <FormMessage />
@@ -160,8 +206,8 @@ export const NewAssetIntoWalletForm = ({
                   type="number"
                   inputMode="decimal"
                   placeholder="20.00"
+                  min="0"
                   {...field}
-                  onChange={(e) => field.onChange(Number(e.target.value))}
                 />
               </FormControl>
               <FormMessage />
@@ -202,18 +248,17 @@ export const NewAssetIntoWalletForm = ({
             <FormItem>
               <FormLabel>Quantity</FormLabel>
               <FormControl>
-                <Input
-                  placeholder="5"
-                  type="number"
-                  {...field}
-                  onChange={(e) => field.onChange(Number(e.target.value))}
-                />
+                <Input placeholder="5" type="number" min="0" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full" disabled={mutation.isPending}>
+        <Button
+          type="submit"
+          className="col-span-2"
+          disabled={mutation.isPending}
+        >
           {mutation.isPending ? "Adding…" : "Submit"}
         </Button>
       </form>
