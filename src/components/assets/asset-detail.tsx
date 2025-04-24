@@ -1,7 +1,8 @@
+import { Bitcoin, ChartCandlestick } from "lucide-react";
+
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Asset } from "@/types/wallet";
 import { numberToCurrency } from "@/helpers/formatNumber";
-import { capitalizeFirstLetter } from "@/helpers/formatText";
 import { EditAsset } from "@/components/assets/actions/edit-asset";
 import { DeleteAsset } from "@/components/assets/actions/delete-asset";
 
@@ -14,28 +15,29 @@ export const AssetDetails = ({
   asset: { type, symbol, quantity, purchasePrice, currentPrice, name },
   selectedWallet,
 }: AssetDetailsProps) => {
+  const balance = (currentPrice - purchasePrice) * quantity;
   return (
-    <TableRow className="grid grid-cols-5 place-items-center">
-      <TableCell className="text-base break-normal whitespace-normal text-left w-full">
-        {symbol}
+    <TableRow className="grid grid-cols-4 place-items-center">
+      <TableCell className="text-base break-normal whitespace-normal text-center w-full">
+        {name} ({symbol})
       </TableCell>
-      <TableCell className="text-base break-normal whitespace-normal text-left w-full">
-        {capitalizeFirstLetter(type)}
+      <TableCell className="break-normal whitespace-normal w-full flex justify-center">
+        {type === "crypto" ? <Bitcoin /> : <ChartCandlestick />}
       </TableCell>
-      <TableCell className="text-left w-full ">{quantity}</TableCell>
-      <TableCell className="text-right w-full">
-        {numberToCurrency({ amount: purchasePrice, withCents: true })}
+      <TableCell
+        className={`text-center w-full ${
+          balance >= 0 ? "font-bold" : "text-destructive"
+        }`}
+      >
+        {numberToCurrency({ amount: balance, withCents: true })}
       </TableCell>
-      <TableCell className="text-right w-full flex gap-2 justify-center">
+      <TableCell className="w-full flex gap-2 justify-center">
         <EditAsset
           selectedWallet={selectedWallet}
           originalData={{ type, quantity, purchasePrice, currentPrice, name }}
           selectedAsset={symbol}
         />
-        <DeleteAsset
-          selectedWallet={selectedWallet}
-          selectedAsset={symbol}
-        />
+        <DeleteAsset selectedWallet={selectedWallet} selectedAsset={symbol} />
       </TableCell>
     </TableRow>
   );

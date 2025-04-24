@@ -8,7 +8,6 @@ import {
   AlertDialog,
   AlertDialogCancel,
   AlertDialogContent,
-  AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
@@ -54,10 +53,7 @@ export const DeleteWallet = ({ walletId, walletName }: DeleteWalletProps) => {
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Delete asset</AlertDialogTitle>
-          <AlertDialogDescription>
-            Delete asset into Wallet
-          </AlertDialogDescription>
+          <AlertDialogTitle>Delete Wallet</AlertDialogTitle>
           {globalError && (
             <p className="text-destructive text-center">{globalError}</p>
           )}
