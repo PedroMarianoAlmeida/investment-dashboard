@@ -17,9 +17,23 @@ export interface Wallet {
   assets: Asset[];
 }
 
+export type AssetOnWallet = Pick<
+  Asset,
+  "symbol" | "quantity" | "purchasePrice"
+>;
+
 export interface WalletFromDb {
   name: Asset["name"];
-  assets: Pick<Asset, "symbol" | "quantity" | "purchasePrice">[];
+  assets: AssetOnWallet[];
 }
 
 export type AssetFromDb = Pick<Asset, "currentPrice" | "name" | "type">;
+
+export interface WalletAndAssetDataFromDb {
+  assets: Map<string, AssetFromDb>;
+  wallets: Map<string, WalletFromDb>;
+}
+
+export interface OtherWalletsAssets {
+  otherWalletsAssets: Pick<Asset, "name" | "symbol" | "type">[];
+}

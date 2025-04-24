@@ -1,8 +1,9 @@
-import { getAssetsFromWallet, GetWalletParams } from "@/services/walletService";
+import { getAssetsFromWallet } from "@/services/walletService";
 import { Section } from "@/components/layout/section";
 import { AssetsTable } from "@/components/assets/assets-table";
-
-interface AssetSectionProps extends GetWalletParams {
+import { WalletAndAssetDataFromDb } from "@/types/wallet";
+import { AddAsset } from "@/components/assets/add-asset";
+interface AssetSectionProps extends WalletAndAssetDataFromDb {
   selectedWallet?: string;
 }
 export const AssetSection = ({
@@ -25,9 +26,20 @@ export const AssetSection = ({
       </Section>
     );
 
+  const {
+    assets: existentAssets,
+    otherWalletsAssets,
+    selectedWalletId,
+  } = assetsWallet;
   return (
     <Section title="Assets" id="assets-heading">
-      <AssetsTable assets={assetsWallet.assets} />
+      <div className="flex flex-col gap-2">
+        <AssetsTable assets={existentAssets} />
+        <AddAsset
+          otherWalletsAssets={otherWalletsAssets}
+          selectedWallet={selectedWalletId}
+        />
+      </div>
     </Section>
   );
 };
