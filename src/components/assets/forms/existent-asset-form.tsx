@@ -66,7 +66,6 @@ export const ExistentAssetForm = ({
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    setGlobalError("");
     mutation.mutate({
       wallet: selectedWallet,
       asset: {

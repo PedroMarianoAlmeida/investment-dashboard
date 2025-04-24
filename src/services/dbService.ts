@@ -191,3 +191,60 @@ export const addNewAssetInNewWallet = async ({
     return { success: true };
   });
 };
+
+interface EditAssetInWalletProps {
+  wallet: string;
+  symbol: string;
+  assetOnWallet?: Partial<Pick<AssetOnWallet, "purchasePrice" | "quantity">>;
+  assetDbData?: Partial<Pick<AssetFromDb, "name" | "type" | "currentPrice">>;
+}
+
+// services/dbService.ts
+export const editAssetInWallet = async ({
+  wallet,
+  symbol,
+  assetOnWallet,
+  assetDbData,
+}: EditAssetInWalletProps) => {
+  return asyncWrapper(async () => {
+    const session = await getServerSession(authOptions);
+    if (!session) throw new Error("No session");
+    const userId = session.user.id;
+
+    // 1) Update the top‐level asset doc if needed
+    if (assetDbData) {
+      const assetDocRef = doc(
+        database,
+        "users",
+        userId,
+        "assets",
+        symbol
+      ).withConverter(assetConverter);
+      await updateDoc(assetDocRef, assetDbData);
+    }
+
+    // 2) Update the embedded wallet entry if needed
+    if (assetOnWallet) {
+      const walletDocRef = doc(
+        database,
+        "users",
+        userId,
+        "wallets",
+        wallet
+      ).withConverter(walletConverter);
+
+      const snap = await getDoc(walletDocRef);
+      if (!snap.exists()) throw new Error(`Wallet "${wallet}" not found`);
+
+      const data = snap.data();
+      const updatedAssets = data.assets.map((item) =>
+        item.symbol === symbol ? { ...item, ...assetOnWallet } : item
+      );
+
+      await updateDoc(walletDocRef, { assets: updatedAssets });
+    }
+
+    revalidatePath("/dashboard");
+    return { success: true };
+  });
+};

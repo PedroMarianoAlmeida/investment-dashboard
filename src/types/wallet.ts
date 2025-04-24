@@ -1,3 +1,4 @@
+import { z } from "zod";
 export type AssetType = "stock" | "crypto";
 
 export interface Asset {
@@ -37,3 +38,13 @@ export interface WalletAndAssetDataFromDb {
 export interface OtherWalletsAssets {
   otherWalletsAssets: Pick<Asset, "name" | "symbol" | "type">[];
 }
+
+export const editAssetIntoWalletFormSchema = z.object({
+  name: z.string().nonempty("Name is required"),
+  type: z.union([z.literal("stock"), z.literal("crypto")]),
+  currentPrice: z.number().min(0),
+  purchasePrice: z.number().min(0),
+  quantity: z.number().min(0),
+});
+
+export type EditAssetForm = z.infer<typeof editAssetIntoWalletFormSchema>;
