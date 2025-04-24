@@ -34,7 +34,7 @@ export const AssetSection = ({
   return (
     <Section title="Assets" id="assets-heading">
       <div className="flex flex-col gap-2">
-        <AssetsTable assets={existentAssets} />
+        <AssetsTable assets={existentAssets} selectedWallet={selectedWalletId} />
         <AddAsset
           otherWalletsAssets={otherWalletsAssets}
           selectedWallet={selectedWalletId}

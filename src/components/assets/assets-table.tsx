@@ -12,8 +12,9 @@ import { AssetDetails } from "@/components/assets/asset-detail";
 
 interface AssetsTableProps {
   assets: Asset[];
+  selectedWallet: string
 }
-export const AssetsTable = ({ assets }: AssetsTableProps) => {
+export const AssetsTable = ({ assets, selectedWallet }: AssetsTableProps) => {
   return (
     <Table className="rounded-lg border border-separate border-spacing-0 p-2">
       <TableHeader>
@@ -35,7 +36,7 @@ export const AssetsTable = ({ assets }: AssetsTableProps) => {
       </TableHeader>
       <TableBody>
         {assets.map((asset) => (
-          <AssetDetails asset={asset} key={asset.symbol} />
+          <AssetDetails asset={asset} key={asset.symbol} selectedWallet={selectedWallet}/>
         ))}
       </TableBody>
     </Table>

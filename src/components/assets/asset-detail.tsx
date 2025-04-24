@@ -6,10 +6,12 @@ import { EditAsset } from "@/components/assets/actions/edit-asset";
 
 interface AssetDetailsProps {
   asset: Asset;
+  selectedWallet: string;
 }
 
 export const AssetDetails = ({
-  asset: { type, symbol, quantity, purchasePrice },
+  asset: { type, symbol, quantity, purchasePrice, currentPrice, name },
+  selectedWallet,
 }: AssetDetailsProps) => {
   return (
     <TableRow className="grid grid-cols-5 place-items-center">
@@ -24,7 +26,10 @@ export const AssetDetails = ({
         {numberToCurrency({ amount: purchasePrice, withCents: true })}
       </TableCell>
       <TableCell className="text-right w-full">
-        <EditAsset />
+        <EditAsset
+          selectedWallet={selectedWallet}
+          originalData={{ type, quantity, purchasePrice, currentPrice, name }}
+        />
       </TableCell>
     </TableRow>
   );

@@ -21,35 +21,29 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { OtherWalletsAssets } from "@/types/wallet";
 
 import { editAssetInWallet } from "@/services/dbService";
+import { editAssetIntoWalletFormSchema, EditAssetForm } from "@/types/wallet";
 
-const formSchema = z.object({
-  name: z.string().nonempty("Name is required"),
-  type: z.union([z.literal("stock"), z.literal("crypto")]),
-  currentPrice: z.number().min(0),
-  purchasePrice: z.number().min(0),
-  quantity: z.number().min(0),
-});
-
-interface ExistentAssetFormProps extends OtherWalletsAssets {
+interface ExistentAssetFormProps {
   selectedWallet: string;
   onSuccess(): void;
+  originalData: EditAssetForm;
 }
 
 export const EditAssetIntoWalletForm = ({
   selectedWallet,
   onSuccess,
+  originalData,
 }: ExistentAssetFormProps) => {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<EditAssetForm>({
+    resolver: zodResolver(editAssetIntoWalletFormSchema),
     defaultValues: {
-      name: "",
-      type: "stock",
-      currentPrice: 0,
-      purchasePrice: 0,
-      quantity: 0,
+      name: originalData.name,
+      type: originalData.type,
+      currentPrice: originalData.currentPrice,
+      purchasePrice: originalData.purchasePrice,
+      quantity: originalData.quantity,
     },
   });
 
@@ -68,7 +62,7 @@ export const EditAssetIntoWalletForm = ({
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  function onSubmit(values: EditAssetForm) {
     const { name, purchasePrice, quantity, currentPrice, type } = values;
     mutation.mutate({
       wallet: selectedWallet,

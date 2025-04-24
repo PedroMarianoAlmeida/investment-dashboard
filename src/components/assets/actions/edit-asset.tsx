@@ -15,11 +15,13 @@ import {
 } from "@/components/ui/alert-dialog";
 
 import { EditAssetIntoWalletForm } from "@/components/assets/forms/edit-asset-into-wallet-form";
+import { EditAssetForm } from "@/types/wallet";
 
-// interface AddAssetProps extends OtherWalletsAssets {
-//   selectedWallet: string;
-// }
-export const EditAsset = () => {
+interface EditAssetProps {
+  selectedWallet: string;
+  originalData: EditAssetForm;
+}
+export const EditAsset = ({ selectedWallet, originalData }: EditAssetProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const closeModal = () => {
     setIsOpen(false);
@@ -38,7 +40,11 @@ export const EditAsset = () => {
           <AlertDialogDescription>
             Edit asset into Wallet
           </AlertDialogDescription>
-          <EditAssetIntoWalletForm />
+          <EditAssetIntoWalletForm
+            selectedWallet={selectedWallet}
+            onSuccess={closeModal}
+            originalData={originalData}
+          />
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
