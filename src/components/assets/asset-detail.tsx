@@ -29,6 +29,7 @@ export const AssetDetails = ({
         <EditAsset
           selectedWallet={selectedWallet}
           originalData={{ type, quantity, purchasePrice, currentPrice, name }}
+          selectedAsset={symbol}
         />
       </TableCell>
     </TableRow>

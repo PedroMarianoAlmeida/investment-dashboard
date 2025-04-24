@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
 
 import {
@@ -29,12 +28,14 @@ interface ExistentAssetFormProps {
   selectedWallet: string;
   onSuccess(): void;
   originalData: EditAssetForm;
+  selectedAsset: string;
 }
 
 export const EditAssetIntoWalletForm = ({
   selectedWallet,
   onSuccess,
   originalData,
+  selectedAsset,
 }: ExistentAssetFormProps) => {
   const form = useForm<EditAssetForm>({
     resolver: zodResolver(editAssetIntoWalletFormSchema),
@@ -63,14 +64,31 @@ export const EditAssetIntoWalletForm = ({
   });
 
   function onSubmit(values: EditAssetForm) {
-    const { name, purchasePrice, quantity, currentPrice, type } = values;
     mutation.mutate({
       wallet: selectedWallet,
-      assetOnWallet: {
-        purchasePrice,
-        quantity,
-      },
-      assetDbData: { name, type, currentPrice },
+      symbol: selectedAsset,
+      // only send wallet‐side changes if they differ
+      ...(values.purchasePrice !== originalData.purchasePrice ||
+      values.quantity !== originalData.quantity
+        ? {
+            assetOnWallet: {
+              purchasePrice: values.purchasePrice,
+              quantity: values.quantity,
+            },
+          }
+        : {}),
+      // only send DB‐side changes if they differ
+      ...(values.name !== originalData.name ||
+      values.type !== originalData.type ||
+      values.currentPrice !== originalData.currentPrice
+        ? {
+            assetDbData: {
+              name: values.name,
+              type: values.type,
+              currentPrice: values.currentPrice,
+            },
+          }
+        : {}),
     });
   }
 
@@ -91,7 +109,6 @@ export const EditAssetIntoWalletForm = ({
         <p className="text-destructive text-center">{globalError}</p>
       )}
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        {/* Asset Name */}
         <FormField
           control={form.control}
           name="name"
@@ -110,7 +127,6 @@ export const EditAssetIntoWalletForm = ({
           )}
         />
 
-        {/* Asset Type */}
         <FormField
           control={form.control}
           name="type"
@@ -137,7 +153,6 @@ export const EditAssetIntoWalletForm = ({
           )}
         />
 
-        {/* Current Price */}
         <FormField
           control={form.control}
           name="currentPrice"
@@ -158,7 +173,6 @@ export const EditAssetIntoWalletForm = ({
           )}
         />
 
-        {/* Purchase Price */}
         <FormField
           control={form.control}
           name="purchasePrice"
@@ -179,7 +193,6 @@ export const EditAssetIntoWalletForm = ({
           )}
         />
 
-        {/* Quantity */}
         <FormField
           control={form.control}
           name="quantity"

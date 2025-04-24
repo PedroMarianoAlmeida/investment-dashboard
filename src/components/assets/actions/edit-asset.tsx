@@ -20,8 +20,9 @@ import { EditAssetForm } from "@/types/wallet";
 interface EditAssetProps {
   selectedWallet: string;
   originalData: EditAssetForm;
+  selectedAsset: string;
 }
-export const EditAsset = ({ selectedWallet, originalData }: EditAssetProps) => {
+export const EditAsset = ({ selectedWallet, originalData,selectedAsset }: EditAssetProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const closeModal = () => {
     setIsOpen(false);
@@ -44,6 +45,7 @@ export const EditAsset = ({ selectedWallet, originalData }: EditAssetProps) => {
             selectedWallet={selectedWallet}
             onSuccess={closeModal}
             originalData={originalData}
+            selectedAsset={selectedAsset}
           />
         </AlertDialogHeader>
         <AlertDialogFooter>
