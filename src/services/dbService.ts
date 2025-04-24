@@ -53,25 +53,34 @@ const assetConverter: FirestoreDataConverter<AssetFromDb> = {
   },
 };
 
+const getUserId = async (): Promise<string> => {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) {
+    throw new Error("Authentication required");
+  }
+  return session.user.id;
+};
+
 export const getUserData = async () => {
   return asyncWrapper(async () => {
-    const session = await getServerSession(authOptions);
-    if (!session) throw new Error("No session");
-
-    const userId = session.user.id;
-
-    // — Wallets —
-    const rawWalletsCol = collection(database, "users", userId, "wallets");
-    const walletsCol = rawWalletsCol.withConverter(walletConverter);
+    const userId = await getUserId();
+    const walletsCol = collection(
+      database,
+      "users",
+      userId,
+      "wallets"
+    ).withConverter(walletConverter);
     const walletsSnap = await getDocs(walletsCol);
     const wallets = new Map<string, WalletFromDb>();
     walletsSnap.docs.forEach((docSnap) => {
       wallets.set(docSnap.id, docSnap.data());
     });
-
-    // — Assets —
-    const rawAssetsCol = collection(database, "users", userId, "assets");
-    const assetsCol = rawAssetsCol.withConverter(assetConverter);
+    const assetsCol = collection(
+      database,
+      "users",
+      userId,
+      "assets"
+    ).withConverter(assetConverter);
     const assetsSnap = await getDocs(assetsCol);
     const assets = new Map<string, AssetFromDb>();
     assetsSnap.docs.forEach((docSnap) => {
@@ -92,12 +101,8 @@ export const addExistentAssetInNewWallet = async ({
   wallet,
 }: AddExistentAssetInNewWalletParams) => {
   return asyncWrapper(async () => {
-    // 1) Auth
-    const session = await getServerSession(authOptions);
-    if (!session) throw new Error("No session");
-    const userId = session.user.id;
+    const userId = await getUserId();
 
-    // 2) Point at the user's wallet doc
     const walletDocRef = doc(
       database,
       "users",
@@ -106,23 +111,21 @@ export const addExistentAssetInNewWallet = async ({
       wallet
     ).withConverter(walletConverter);
 
-    // 3) Fetch current wallet data
     const walletSnap = await getDoc(walletDocRef);
     if (!walletSnap.exists())
       throw new Error(`Wallet "${wallet}" not found for user ${userId}`);
 
     const walletData = walletSnap.data();
 
-    // 4) Check for existing symbol
-    const alreadyHas = walletData.assets.some((a) => a.symbol === asset.symbol);
+    const alreadyHas = walletData?.assets?.some(
+      (a) => a.symbol === asset.symbol
+    );
     if (alreadyHas) {
-      // you can choose to throw or just return
       throw new Error(
         `Asset "${asset.symbol}" is already in wallet "${wallet}"`
       );
     }
 
-    // 5) Append via arrayUnion
     await updateDoc(walletDocRef, {
       assets: arrayUnion(asset),
     });
@@ -143,12 +146,8 @@ export const addNewAssetInNewWallet = async ({
   wallet,
 }: AddNewAssetInNewWalletProps) => {
   return asyncWrapper(async () => {
-    // 1) Auth
-    const session = await getServerSession(authOptions);
-    if (!session) throw new Error("No session");
-    const userId = session.user.id;
+    const userId = await getUserId();
 
-    // 2) Prepare the asset-doc ref (use symbol as ID)
     const assetDocRef = doc(
       database,
       "users",
@@ -157,7 +156,6 @@ export const addNewAssetInNewWallet = async ({
       assetOnWallet.symbol
     ).withConverter(assetConverter);
 
-    // 3) Check if the asset already exists
     const assetSnap = await getDoc(assetDocRef);
     if (assetSnap.exists()) {
       throw new Error(
@@ -165,10 +163,8 @@ export const addNewAssetInNewWallet = async ({
       );
     }
 
-    // 4) Write the new asset into users/{userId}/assets
     await setDoc(assetDocRef, assetDbData);
 
-    // 5) Now point at the wallet doc
     const walletDocRef = doc(
       database,
       "users",
@@ -177,13 +173,11 @@ export const addNewAssetInNewWallet = async ({
       wallet
     ).withConverter(walletConverter);
 
-    // 6) Ensure the wallet exists
     const walletSnap = await getDoc(walletDocRef);
     if (!walletSnap.exists()) {
       throw new Error(`Wallet "${wallet}" not found for user ${userId}`);
     }
 
-    // 7) Append the new-on-wallet entry
     await updateDoc(walletDocRef, {
       assets: arrayUnion(assetOnWallet),
     });
@@ -207,11 +201,8 @@ export const editAssetInWallet = async ({
   assetDbData,
 }: EditAssetInWalletProps) => {
   return asyncWrapper(async () => {
-    const session = await getServerSession(authOptions);
-    if (!session) throw new Error("No session");
-    const userId = session.user.id;
+    const userId = await getUserId();
 
-    // 1) Update the top‐level asset doc if needed
     if (assetDbData) {
       const assetDocRef = doc(
         database,
@@ -223,7 +214,6 @@ export const editAssetInWallet = async ({
       await updateDoc(assetDocRef, assetDbData);
     }
 
-    // 2) Update the embedded wallet entry if needed
     if (assetOnWallet) {
       const walletDocRef = doc(
         database,
@@ -237,11 +227,13 @@ export const editAssetInWallet = async ({
       if (!snap.exists()) throw new Error(`Wallet "${wallet}" not found`);
 
       const data = snap.data();
-      const updatedAssets = data.assets.map((item) =>
+      const updatedAssets = data?.assets?.map((item) =>
         item.symbol === symbol ? { ...item, ...assetOnWallet } : item
       );
 
-      await updateDoc(walletDocRef, { assets: updatedAssets });
+      if (updatedAssets) {
+        await updateDoc(walletDocRef, { assets: updatedAssets });
+      }
     }
 
     revalidatePath("/dashboard");
@@ -258,12 +250,8 @@ export const deleteAssetFromWallet = async ({
   wallet,
 }: DeleteAssetFromWalletProps) => {
   return asyncWrapper(async () => {
-    // 1) Auth
-    const session = await getServerSession(authOptions);
-    if (!session) throw new Error("No session");
-    const userId = session.user.id;
+    const userId = await getUserId();
 
-    // 2) Point at the wallet doc
     const walletDocRef = doc(
       database,
       "users",
@@ -272,34 +260,29 @@ export const deleteAssetFromWallet = async ({
       wallet
     ).withConverter(walletConverter);
 
-    // 3) Fetch current wallet data
     const walletSnap = await getDoc(walletDocRef);
     if (!walletSnap.exists()) {
       throw new Error(`Wallet "${wallet}" not found for user ${userId}`);
     }
     const walletData = walletSnap.data();
 
-    // 4) Remove the asset by symbol
-    const updatedAssets = walletData.assets.filter((a) => a.symbol !== symbol);
+    const updatedAssets = walletData?.assets?.filter(
+      (a) => a.symbol !== symbol
+    );
 
-    // 5) Write back the filtered array
-    await updateDoc(walletDocRef, { assets: updatedAssets });
+    if (updatedAssets) {
+      await updateDoc(walletDocRef, { assets: updatedAssets });
+    }
 
-    // 6) Revalidate your dashboard
     revalidatePath("/dashboard");
-
     return { success: true };
   });
 };
 
 export const createEmptyWallet = async (walletName: string) => {
   return asyncWrapper(async () => {
-    // 1) Auth
-    const session = await getServerSession(authOptions);
-    if (!session) throw new Error("No session");
-    const userId = session.user.id;
+    const userId = await getUserId();
 
-    // 2) Point at the wallets collection for this user
     const walletsCol = collection(
       database,
       "users",
@@ -307,31 +290,23 @@ export const createEmptyWallet = async (walletName: string) => {
       "wallets"
     ).withConverter(walletConverter);
 
-    // 3) Create a new doc with an auto‐generated ID
     const newWalletRef = doc(walletsCol);
 
-    // 4) Initialize it with the provided name and an empty assets array
     await setDoc(newWalletRef, {
       name: walletName,
       assets: [],
     });
 
-    // 5) Revalidate your dashboard so the new wallet shows up immediately
     revalidatePath("/dashboard");
 
-    // 6) Return success and the new wallet’s ID
     return { success: true, walletId: newWalletRef.id };
   });
 };
 
 export const deleteWallet = async (walletId: string) => {
   return asyncWrapper(async () => {
-    // 1) Auth
-    const session = await getServerSession(authOptions);
-    if (!session) throw new Error("No session");
-    const userId = session.user.id;
+    const userId = await getUserId();
 
-    // 2) Locate the wallet document
     const walletDocRef = doc(
       database,
       "users",
@@ -340,10 +315,8 @@ export const deleteWallet = async (walletId: string) => {
       walletId
     ).withConverter(walletConverter);
 
-    // 3) Delete it
     await deleteDoc(walletDocRef);
 
-    // 4) Revalidate dashboard
     revalidatePath("/dashboard");
 
     return { success: true };
