@@ -68,6 +68,46 @@ export const EditAssetIntoWalletForm = ({
   });
 
   function onSubmit(values: EditAssetForm) {
+    // 0) clear previous errors
+    form.clearErrors();
+    setGlobalError(null);
+
+    // 1) validate name
+    if (!values.name.trim()) {
+      form.setError("name", {
+        type: "manual",
+        message: "Name is required",
+      });
+      return;
+    }
+
+    // 2) validate numeric fields > 0
+    let hasError = false;
+
+    if (values.currentPrice <= 0) {
+      form.setError("currentPrice", {
+        type: "manual",
+        message: "Must be greater than 0",
+      });
+      hasError = true;
+    }
+    if (values.purchasePrice <= 0) {
+      form.setError("purchasePrice", {
+        type: "manual",
+        message: "Must be greater than 0",
+      });
+      hasError = true;
+    }
+    if (values.quantity <= 0) {
+      form.setError("quantity", {
+        type: "manual",
+        message: "Must be greater than 0",
+      });
+      hasError = true;
+    }
+
+    if (hasError) return;
+
     mutation.mutate({
       wallet: selectedWallet,
       symbol: selectedAsset,
