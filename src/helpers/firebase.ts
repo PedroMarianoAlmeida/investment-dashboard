@@ -57,7 +57,6 @@ export const getUserWalletsCollection = async () => {
 };
 
 export const getUserWalletDoc = async (walletId: string) => {
-  const userId = await getUserId();
   return doc(await getUserWalletsCollection(), walletId).withConverter(
     walletConverter
   );
@@ -71,7 +70,6 @@ export const getUserAssetsCollection = async () => {
 };
 
 export const getUserAssetDoc = async (assetSymbol: string) => {
-  const userId = await getUserId();
   return doc(await getUserAssetsCollection(), assetSymbol).withConverter(
     assetConverter
   );
