@@ -3,7 +3,8 @@ import { Section } from "@/components/layout/section";
 import { getWallets } from "@/services/walletService";
 import { WalletAndAssetDataFromDb } from "@/types/wallet";
 import { NewWallet } from "@/components/wallets/actions/new-wallet";
-import { WalletBarChart } from "@/components/wallets/wallet-bar-chart";
+import { WalletBarChart } from "@/components/wallets/charts/wallet-bar-chart";
+import { WalletPieChart } from "@/components/wallets/charts/wallet-pie-chart";
 
 export const WalletSection = ({
   assets,
@@ -19,6 +20,7 @@ export const WalletSection = ({
         {walletsTreated.length !== 0 && (
           <div className="w-full flex justify-center">
             <WalletBarChart wallets={walletsTreated} />
+            <WalletPieChart wallets={walletsTreated} />
           </div>
         )}
       </div>
