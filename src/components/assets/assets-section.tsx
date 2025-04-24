@@ -2,7 +2,7 @@ import { getAssetsFromWallet } from "@/services/walletService";
 import { Section } from "@/components/layout/section";
 import { AssetsTable } from "@/components/assets/assets-table";
 import { WalletAndAssetDataFromDb } from "@/types/wallet";
-import { AddAsset } from "@/components/assets/add-asset";
+import { AddAsset } from "@/components/assets/actions/add-asset";
 interface AssetSectionProps extends WalletAndAssetDataFromDb {
   selectedWallet?: string;
 }
