@@ -12,6 +12,7 @@ import {
   updateDoc,
   arrayUnion,
   setDoc,
+  deleteDoc,
 } from "firebase/firestore";
 
 import { database } from "@/config/databaseConfig";
@@ -320,5 +321,31 @@ export const createEmptyWallet = async (walletName: string) => {
 
     // 6) Return success and the new wallet’s ID
     return { success: true, walletId: newWalletRef.id };
+  });
+};
+
+export const deleteWallet = async (walletId: string) => {
+  return asyncWrapper(async () => {
+    // 1) Auth
+    const session = await getServerSession(authOptions);
+    if (!session) throw new Error("No session");
+    const userId = session.user.id;
+
+    // 2) Locate the wallet document
+    const walletDocRef = doc(
+      database,
+      "users",
+      userId,
+      "wallets",
+      walletId
+    ).withConverter(walletConverter);
+
+    // 3) Delete it
+    await deleteDoc(walletDocRef);
+
+    // 4) Revalidate dashboard
+    revalidatePath("/dashboard");
+
+    return { success: true };
   });
 };

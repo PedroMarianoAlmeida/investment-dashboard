@@ -5,6 +5,7 @@ import { TableCell, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { WalletWithIdWithoutAssets } from "@/types/wallet";
 import { numberToCurrency } from "@/helpers/formatNumber";
+import { DeleteWallet } from "@/components/wallets/actions/delete-wallet";
 
 interface WalletsDetailsProps {
   walletDetail: WalletWithIdWithoutAssets;
@@ -24,12 +25,13 @@ export const WalletsDetails = ({
       <TableCell className="text-right w-full">
         {numberToCurrency({ amount: spentAmount })}
       </TableCell>
-      <TableCell className="w-full text-center">
+      <TableCell className="text-right w-full flex gap-2 justify-center">
         <Link href={`/dashboard/wallet/${id}`}>
           <Button className="cursor-pointer">
             <Eye />
           </Button>
         </Link>
+        <DeleteWallet walletName={walletName} walletId={id} />
       </TableCell>
     </TableRow>
   );
