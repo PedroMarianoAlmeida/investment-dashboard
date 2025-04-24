@@ -12,8 +12,6 @@ export default async function DashboardPage() {
   return (
     <main className="p-4">
       <WalletSection assets={assets} wallets={wallets} />
-
-      {/* Add all assets table, and maybe a nice chart */}
     </main>
   );
 }
