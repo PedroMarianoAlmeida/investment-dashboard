@@ -15,7 +15,6 @@ interface WalletsDetailsProps {
 export const WalletsDetails = ({
   walletDetail: { walletName, id, profitLoss, assets },
 }: WalletsDetailsProps) => {
-  console.log({ assets });
   return (
     <TableRow className="grid grid-cols-4 place-items-center">
       <TableCell className="text-base break-normal whitespace-normal text-center w-full">
