@@ -187,6 +187,7 @@ export const NewAssetIntoWalletForm = ({
                   inputMode="decimal"
                   placeholder="10.00"
                   min="0"
+                  step="any"
                   {...field}
                 />
               </FormControl>
@@ -207,6 +208,7 @@ export const NewAssetIntoWalletForm = ({
                   inputMode="decimal"
                   placeholder="20.00"
                   min="0"
+                  step="any"
                   {...field}
                 />
               </FormControl>
@@ -248,7 +250,13 @@ export const NewAssetIntoWalletForm = ({
             <FormItem>
               <FormLabel>Quantity</FormLabel>
               <FormControl>
-                <Input placeholder="5" type="number" min="0" {...field} />
+                <Input
+                  placeholder="5"
+                  type="number"
+                  min="0"
+                  {...field}
+                  step="any"
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
