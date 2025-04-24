@@ -68,7 +68,7 @@ export const NewAssetIntoWalletForm = ({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-2 gap-8">
         <FormField
           control={form.control}
           name="symbol"
@@ -189,7 +189,7 @@ export const NewAssetIntoWalletForm = ({
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+        <Button type="submit" className="col-span-2">Submit</Button>
       </form>
     </Form>
   );
