@@ -290,3 +290,35 @@ export const deleteAssetFromWallet = async ({
     return { success: true };
   });
 };
+
+export const createEmptyWallet = async (walletName: string) => {
+  return asyncWrapper(async () => {
+    // 1) Auth
+    const session = await getServerSession(authOptions);
+    if (!session) throw new Error("No session");
+    const userId = session.user.id;
+
+    // 2) Point at the wallets collection for this user
+    const walletsCol = collection(
+      database,
+      "users",
+      userId,
+      "wallets"
+    ).withConverter(walletConverter);
+
+    // 3) Create a new doc with an auto‐generated ID
+    const newWalletRef = doc(walletsCol);
+
+    // 4) Initialize it with the provided name and an empty assets array
+    await setDoc(newWalletRef, {
+      name: walletName,
+      assets: [],
+    });
+
+    // 5) Revalidate your dashboard so the new wallet shows up immediately
+    revalidatePath("/dashboard");
+
+    // 6) Return success and the new wallet’s ID
+    return { success: true, walletId: newWalletRef.id };
+  });
+};

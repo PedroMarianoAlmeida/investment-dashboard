@@ -13,6 +13,7 @@ interface WalletsTableProps {
   wallets: WalletWithIdWithoutAssets[];
 }
 export const WalletTable = ({ wallets }: WalletsTableProps) => {
+  if (wallets.length === 0) return <p className="mb-2">No wallets yet</p>;
   return (
     <Table className="rounded-lg border border-separate border-spacing-0 p-2">
       <TableHeader>
