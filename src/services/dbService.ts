@@ -1,6 +1,6 @@
 "use server";
-
 import { getServerSession } from "next-auth/next";
+import { revalidatePath } from "next/cache";
 import {
   collection,
   getDocs,
@@ -126,6 +126,7 @@ export const addExistentAssetInNewWallet = async ({
       assets: arrayUnion(asset),
     });
 
+    revalidatePath("/dashboard");
     return { success: true };
   });
 };
@@ -186,6 +187,7 @@ export const addNewAssetInNewWallet = async ({
       assets: arrayUnion(assetOnWallet),
     });
 
+    revalidatePath("/dashboard");
     return { success: true };
   });
 };
