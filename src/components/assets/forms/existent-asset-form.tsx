@@ -30,14 +30,14 @@ const formSchema = z.object({
   symbol: z.string().nonempty("You must pick an asset"),
 });
 
-interface ExistentAssetForm extends OtherWalletsAssets {
+interface ExistentAssetFormProps extends OtherWalletsAssets {
   selectedWallet: string;
 }
 
 export const ExistentAssetForm = ({
   otherWalletsAssets,
   selectedWallet,
-}: ExistentAssetForm) => {
+}: ExistentAssetFormProps) => {
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -66,7 +66,7 @@ export const ExistentAssetForm = ({
           name="symbol"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Pick an asset</FormLabel>
+              <FormLabel>Asset type</FormLabel>
               <FormControl>
                 <Select
                   onValueChange={field.onChange}
