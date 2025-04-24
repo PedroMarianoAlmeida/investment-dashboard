@@ -13,6 +13,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
+import { NewWalletForm } from "@/components/wallets/forms/new-wallet-form";
+
 export const NewWallet = () => {
   const [isOpen, setIsOpen] = useState(false);
   const closeModal = () => {
@@ -28,12 +30,7 @@ export const NewWallet = () => {
         <AlertDialogHeader>
           <AlertDialogTitle>New wallet</AlertDialogTitle>
           <AlertDialogDescription>Create a new Wallet</AlertDialogDescription>
-          {/* <EditAssetIntoWalletForm
-            selectedWallet={selectedWallet}
-            onSuccess={closeModal}
-            originalData={originalData}
-            selectedAsset={selectedAsset}
-          /> */}
+          <NewWalletForm onSuccess={closeModal} />
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
