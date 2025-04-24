@@ -2,15 +2,16 @@ import {
   Asset,
   WalletAndAssetDataFromDb,
   AssetType,
-  WalletWithIdWithoutAssets,
+  WalletWithId,
   OtherWalletsAssets,
 } from "@/types/wallet";
 
 export function getWallets({
   assets: assetMap,
   wallets: walletMap,
-}: WalletAndAssetDataFromDb): WalletWithIdWithoutAssets[] {
+}: WalletAndAssetDataFromDb): WalletWithId[] {
   return Array.from(walletMap.entries()).map(([walletId, walletDb]) => {
+    // Rehydrate each asset for this wallet
     const fullAssets: Asset[] = walletDb.assets.map(
       ({ symbol, quantity, purchasePrice }) => {
         const db = assetMap.get(symbol);
@@ -28,6 +29,7 @@ export function getWallets({
       }
     );
 
+    // Compute totals
     const currentAmount = fullAssets.reduce(
       (sum, a) => sum + a.currentPrice * a.quantity,
       0
@@ -44,6 +46,7 @@ export function getWallets({
       currentAmount,
       spentAmount,
       profitLoss,
+      assets: fullAssets, // ← include the assets here
     };
   });
 }
