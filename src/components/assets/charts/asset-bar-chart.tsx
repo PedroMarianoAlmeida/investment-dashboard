@@ -32,7 +32,7 @@ export const AssetBarChart = ({ assets }: AssetBarChartProps) => {
   }));
 
   return (
-    <div className="w-120">
+    <div className="w-full sm:w-120">
       <h3 className="text-center">Current vs. Purchase Value per Asset</h3>
       <ChartContainer config={chartConfig} className="min-h-[200px]">
         <BarChart accessibilityLayer data={data}>

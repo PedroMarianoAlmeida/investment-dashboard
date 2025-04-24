@@ -57,9 +57,13 @@ export const AssetSection = ({
         </div>
 
         {existentAssets.length !== 0 && (
-          <div className="w-full flex justify-center">
-            <AssetBarChart assets={existentAssets} />
-            <AssetPieChart assets={existentAssets} />
+          <div className="w-full flex flex-col md:flex-row justify-center items-center gap-4 mt-4">
+            <div className="w-full md:w-1/2">
+              <AssetBarChart assets={existentAssets} />
+            </div>
+            <div className="w-full md:w-1/2">
+              <AssetPieChart assets={existentAssets} />
+            </div>
           </div>
         )}
       </div>

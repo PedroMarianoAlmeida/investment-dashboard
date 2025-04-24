@@ -17,7 +17,7 @@ export const AssetPieChart = ({ assets }: AssetPieChartProps) => {
   const chartData = assets.map((a, idx) => {
     const colorIndex = (idx % 5) + 1;
     return {
-      name: a.symbol,  // or a.name
+      name: a.symbol, // or a.name
       value: a.currentPrice * a.quantity,
       fill: `var(--chart-${colorIndex})`,
     };
@@ -33,7 +33,7 @@ export const AssetPieChart = ({ assets }: AssetPieChartProps) => {
   }, {} as ChartConfig);
 
   return (
-    <div className="w-120">
+    <div className="w-full sm:w-120">
       <h3 className="text-center">Share of Value Across Assets</h3>
       <ChartContainer config={chartConfig} className="min-h-[200px]">
         <PieChart>
