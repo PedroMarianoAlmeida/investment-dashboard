@@ -12,39 +12,23 @@ interface WalletPieChartProps {
   wallets: WalletWithId[];
 }
 export const WalletPieChart = ({ wallets }: WalletPieChartProps) => {
-  const chartConfig = {
-    visitors: {
-      label: "Visitors",
-    },
-    chrome: {
-      label: "Chrome",
-      color: "var(--chart-1)",
-    },
-    safari: {
-      label: "Safari",
-      color: "var(--chart-2)",
-    },
-    firefox: {
-      label: "Firefox",
-      color: "var(--chart-3)",
-    },
-    edge: {
-      label: "Edge",
-      color: "var(--chart-4)",
-    },
-    other: {
-      label: "Other",
-      color: "var(--chart-5)",
-    },
-  } satisfies ChartConfig;
+  const chartData = wallets.map((w, idx) => {
+    const colorIndex = (idx % 5) + 1;
+    return {
+      name: w.walletName,
+      value: w.currentAmount,
+      fill: `var(--chart-${colorIndex})`,
+    };
+  });
 
-  const chartData = [
-    { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
-    { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
-    { browser: "firefox", visitors: 287, fill: "var(--color-firefox)" },
-    { browser: "edge", visitors: 173, fill: "var(--color-edge)" },
-    { browser: "other", visitors: 190, fill: "var(--color-other)" },
-  ];
+  const total = chartData.reduce((sum, slice) => sum + slice.value, 0);
+
+  const chartConfig = wallets.reduce((cfg, w) => {
+    cfg[w.walletName] = {
+      label: w.walletName,
+    };
+    return cfg;
+  }, {} as ChartConfig);
 
   return (
     <div className="w-120">
@@ -57,8 +41,8 @@ export const WalletPieChart = ({ wallets }: WalletPieChartProps) => {
           />
           <Pie
             data={chartData}
-            dataKey="visitors"
-            nameKey="browser"
+            dataKey="value"
+            nameKey="name"
             innerRadius={60}
             strokeWidth={5}
           >
@@ -72,11 +56,8 @@ export const WalletPieChart = ({ wallets }: WalletPieChartProps) => {
                       textAnchor="middle"
                       dominantBaseline="middle"
                     >
-                      <tspan
-                       
-                        className="fill-foreground font-bold"
-                      >
-                        ${20000}
+                      <tspan className="fill-foreground font-bold">
+                        ${total}
                       </tspan>
                     </text>
                   );
