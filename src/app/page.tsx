@@ -1,5 +1,6 @@
 import { Lock, Shield } from "lucide-react";
 import { Cta } from "@/components/home-page/cta";
+import { MockChart } from "@/components/home-page/mock-chart";
 
 export default async function Home() {
   return (
@@ -29,16 +30,9 @@ export default async function Home() {
               </div>
             </div>
           </div>
-          <div className="mx-auto flex w-full items-center justify-center lg:justify-end">
-            <div className="relative w-full max-w-[400px] lg:max-w-none">
-              {/* <Image
-                  src="/placeholder.svg?height=600&width=400"
-                  width={400}
-                  height={600}
-                  alt="App screenshot"
-                  className="mx-auto aspect-[2/3] overflow-hidden rounded-xl object-cover shadow-xl"
-                /> */}
-            </div>
+          <div className="mx-auto flex w-full items-center justify-center lg:justify-end flex-col gap-4">
+            <MockChart />
+            <Cta />
           </div>
         </div>
       </div>
